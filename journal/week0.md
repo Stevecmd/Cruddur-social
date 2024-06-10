@@ -29,26 +29,26 @@ Watched and completed the tasks in the video: Week 0 - Generate credentials, AWS
 Tasks:
 - Created the Cruddur Logical Architectural diagram and napkin design.
 - Created a Budget to track my spend and put a fixed amount of $10. 
-![$10 dollar Budget](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/Budget.JPG)
+![$10 dollar Budget](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Budget.JPG)
 - Activated the AWS cost allocation tags.
 - Investigated my costs through cost explorer.
-![Cost explorer](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/Cost%20explorer.JPG)
+![Cost explorer](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cost%20explorer.JPG)
 > Note: It cost me $3.48 dollars to buy my domain via Route 53 and an additional $0.50 dollars for Route 53 Hosted zones. 
 - Checked out the Free tier services and compared them to the trial services.
 - Created a new User with CLI priviledges. The user is configured with MFA, Access keys and access policies.
-![New User with CLI privilege](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/CLIPriviledgesAccesskey.jpg)
+![New User with CLI privilege](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/CLIPriviledgesAccesskey.jpg)
 - Configured Gitpod Env vars; every time the gitpod environment starts, it will automatically set up a new environment with my 
     preconfigured credentails..
-    ![Proof GitPod account](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/Gitpod.JPG)
+    ![Proof GitPod account](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Gitpod.JPG)
 - Confirmed that the AWS CLI is working and it is indeed displaying the expected user. 
     [Instructions to install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-    ![Proof of aws cli](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/proof%20of%20aws%20cli.JPG)
+    ![Proof of aws cli](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/proof%20of%20aws%20cli.JPG)
 - Created an AWS Budget via the CLI.
 - Enabled Billing and created a billing alarm via CLI.
-    ![Proof Billing alarm on the console](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/Budget%20alerts.JPG)
+    ![Proof Billing alarm on the console](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Budget%20alerts.JPG)
 
 - Created a tag via the CLI.
 - Installed aws auto-prompt on the cli
-  ![Proof of aws auto-prompt](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%200/aws%20cli%20autoprompt.JPG)
+  ![Proof of aws auto-prompt](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/aws%20cli%20autoprompt.JPG)
 
 
