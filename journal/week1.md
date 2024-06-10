@@ -2,7 +2,7 @@
 This was the second week of the Bootcamp. In the end, I was succesful but it was quite intense as I wasted several days trying to
 figure out what was causing the 404 error as shown below. 
 >>404 Error Page not found
-![404 Not Found](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/404%20error%20after%20docker%20run.JPG)
+![404 Not Found](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/404%20error%20after%20docker%20run.JPG)
 ---
 **In the end, I was victorious! Here's how I did it.**
 
@@ -91,7 +91,7 @@ cd ..
 - append to the url to `/api/activities/home`
 - you should get back json
 
-![Containerize Backend](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Working%20container%20from%20docker%20image.JPG)
+![Containerize Backend](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Working%20container%20from%20docker%20image.JPG)
 
 <hr/>
 
@@ -119,12 +119,12 @@ CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]
 
 ### Build Container
 
-![Build container](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/build%20container.JPG)
+![Build container](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/build%20container.JPG)
 
 ```sh
 docker build -t  backend-flask ./backend-flask
 ```
-![Backend flask](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/docker%20ps.JPG)
+![Backend flask](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20ps.JPG)
 
 <hr/>
 
@@ -146,7 +146,7 @@ unset BACKEND_URL="*"
 
 <hr/>
 
-![Docker build confirmation](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/docker%20build%20confirmation.JPG)
+![Docker build confirmation](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20ps-a.JPG)
 
 <hr/>
 
@@ -157,17 +157,17 @@ docker container run --rm -p 4567:4567 -d backend-flask
 <hr/>
 
 #### Attach Shell
-![Attach shell](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Attach%20shell.png)
+![Attach shell](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Attach%20shell.png)
 
 <hr/>
 
 #### Docker Run Container
-![Docker Run container](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/container%20run%201.JPG)
+![Docker Run container](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/container%20run%201.JPG)
 
 <hr/>
 
 #### Docker Running container on Specific ports
-![Docker Running container on Specific ports](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/container%20run%202.JPG)
+![Docker Running container on Specific ports](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/container%20run%202.JPG)
 
 <hr/>
 
@@ -185,17 +185,17 @@ docker ps
 docker images
 ```
 #### Getting the container image ID's via CLI - docker ps
-![Getting the container image ID's via CLI - docker ps](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/docker%20ps.JPG)
+![Getting the container image ID's via CLI - docker ps](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20ps.JPG)
 
 <hr/>
 
 #### Getting the container image ID's via CLI - docker ps -a
-![Getting the container image ID's via CLI - docker ps -a](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/docker%20ps-a.JPG)
+![Getting the container image ID's via CLI - docker ps -a](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20ps-a.JPG)
 
 <hr/>
 
 #### Getting the docker images
-![Getting the docker images](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/docker%20images.JPG)
+![Getting the docker images](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20images.JPG)
 
 ### Send Curl to Test Server
 
@@ -253,22 +253,22 @@ docker image rm backend-flask --force
 FLASK_ENV=production PORT=8080 docker run -p 4567:4567 -it backend-flask
 ```
 #### Overriding ports
-!(https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Unsetting%20URL's.JPG)
+!(https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Unsetting%20URL's.JPG)
 
 > Look at Dockerfile to see how ${PORT} is interpolated
 
 #### Unset Backend and Front End ports
-![Unset Backend and Front End ports](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Unset%20backend%20and%20frontend.JPG)
+![Unset Backend and Front End ports](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Unset%20backend%20and%20frontend.JPG)
 
 <hr/>
 
 #### Unset Backend and Front End URL's
-![Unset Backend and Front End URL's](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Unsetting%20URL's.JPG)
+![Unset Backend and Front End URL's](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Unsetting%20URL's.JPG)
 
 <hr/>
 
 #### Unset the necessary ports for the app to work
-![Unset the necessary ports for the app to work](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Unlocked%20ports.JPG)
+![Unset the necessary ports for the app to work](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Unlocked%20ports.JPG)
 
 <hr/>
 
@@ -283,12 +283,12 @@ We have to run NPM Install before building the container since it needs to copy 
 cd frontend-react-js
 npm i
 ```
-![NPM Install](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/npm%20install%20in%20frontendreact.JPG)
+![NPM Install](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/npm%20install%20in%20frontendreact.JPG)
 
 <hr/>
 
 `Npm i` on startup is tyring to repeat, decided to automate the process.
-![NPM Install Automation](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/automating%20npm%20install%20on%20startup.JPG)
+![NPM Install Automation](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/automating%20npm%20install%20on%20startup.JPG)
 
 <hr/>
 
@@ -361,7 +361,7 @@ networks:
     name: cruddur
 ```
 
-![Docker Compose Images](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/docker%20images.JPG)
+![Docker Compose Images](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20images.JPG)
 
 <hr/>
 
@@ -391,11 +391,11 @@ volumes:
     driver: local
 ```
 
-![PostGres and DynamoDB install](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Added%20DynamoDB%20and%20Postgres.JPG)
+![PostGres and DynamoDB install](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Added%20DynamoDB%20and%20Postgres.JPG)
 
 <hr/>
 
-![Current running ports](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Opening%20all%20the%20ports.JPG)
+![Current running ports](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Opening%20all%20the%20ports.JPG)
 
 <hr/>
 
@@ -435,7 +435,7 @@ services:
 Example of using DynamoDB local
 https://github.com/100DaysOfCloud/challenge-dynamodb-local
 
-![Using DynamoDB local](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/TestingDynamoDB.JPG)
+![Using DynamoDB local](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/TestingDynamoDB.JPG)
 
 <hr/>
 
@@ -455,11 +455,11 @@ aws dynamodb create-table \
 
 <hr/>
 
-![DynamoDB Create table](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/DynamoDB%20success.JPG)
+![DynamoDB Create table](hhttps://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/DynamoDB%20success.JPG)
 
 <hr/>
 
-![DynamoDB Create Item](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/createitem.JPG)
+![DynamoDB Create Item](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/createitem.JPG)
 ```sh
 aws dynamodb put-item \
     --endpoint-url http://localhost:8000 \
@@ -470,11 +470,11 @@ aws dynamodb put-item \
 ```
 <hr/>
 
-![DynamoDB Create Item in action](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/createitemMain.JPG)
+![DynamoDB Create Item in action](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/createitemMain.JPG)
 
 <hr/>
 
-![Code for DynamoDB List Tables](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/List%20tables.JPG)
+![Code for DynamoDB List Tables](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/listTables.JPG)
 
 ## List Tables
 
@@ -496,7 +496,7 @@ aws dynamodb scan --table-name cruddur_cruds --query "Items" --endpoint-url http
 ```sh
 aws dynamodb scan --table-name cruddur_cruds --query "Items" --endpoint-url http://localhost:8000
 ````
-![Get Records](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/getRecordsMain.JPG)
+![Get Records](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/getRecordsMain.JPG)
 
 ## References For DynamoDB local
 
@@ -527,60 +527,60 @@ volumes:
 <hr/>
 
 ### PostGres Install and configuration
-![PostGres DB configuration](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/postgresDB%20connection.JPG)
+![PostGres DB configuration](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/postgresDB%20connection.JPG)
 
 <hr/>
 
-![PostGres DB Success](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/postgresdbsuccessful%20connection.JPG)
+![PostGres DB Success](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/postgresdbsuccessful%20connection.JPG)
 
 <hr/>
 
 ### PostGres Install and configuration round 2 using SQLTool
-![PostGres DB configuration2](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/postgres%20local%20access%20using%20SQLTool.JPG)
+![PostGres DB configuration2](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/postgres%20local%20access%20using%20SQLTool.JPG)
 
 <hr/>
 
 ### PostGres local access
-![PostGres local access](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/postgres%20local%20access.JPG)
+![PostGres local access](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/postgres%20local%20access.JPG)
 
 <hr/>
 
-![PostGres DB Success](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/postgresdbsuccessful%20connection.JPG)
+![PostGres DB Success](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/postgresdbsuccessful%20connection.JPG)
 
 <hr/>
 
 #### Working App - Backend (Terminal)
-![Working App - Backend (Terminal)](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Running%20app%20on%20terminal.JPG)
+![Working App - Backend (Terminal)](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Running%20app%20on%20terminal.JPG)
 
 <hr/>
 
 #### Open API integration
-![Open API](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/open%20api.JPG)
-![Open API confirmation](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/open%20api.JPG)
+![Open API](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/open%20api.JPG)
+![Open API confirmation](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/open%20api%202.JPG)
 
 <hr/>
 
 #### Working App - Backend
-![Working App - Backend](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/open%20api%202.JPG)
+![Working App - Backend](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/open%20api%202.JPG)
 
 <hr/>
 
 #### Notifications Backend
-![Working App - Port 3000](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/notifications%20backend.JPG)
+![Working App - Port 3000](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/notifications%20backend.JPG)
 
 <hr/>
 
 #### Working App - Port 3000
-![Working App - Port 3000](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/Working%20application%20on%20port%203000.JPG)
+![Working App - Port 3000](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Working%20application%20on%20port%203000.JPG)
 
 <hr/>
 
 #### Final image showing correct ports are running
-![Final image showing correct ports are running](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/final%20correct%20ports%20are%20running.JPG)
+![Final image showing correct ports are running](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/final%20correct%20ports%20are%20running.JPG)
 
 <hr/>
 
-[My EC2 Docker setup instructions](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/dockersetup.md)
+[My EC2 Docker setup instructions](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/dockersetup.md)
 <hr/>
 
 $${\color{red}The End}$$
