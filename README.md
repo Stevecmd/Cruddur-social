@@ -1,6 +1,6 @@
-# Cruddur Social
+# Cruddur-Social
 
-- Application: Cruddur Social
+- Application: Cruddur-Social
 
 **Welcome Screen**
 
