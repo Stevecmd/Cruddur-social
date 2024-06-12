@@ -3,7 +3,8 @@
 ## Logical Diagram
 
 Set up accounts on the lucid and come up with the Logical diagram.
-![Logical Architectural Diagram](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur%20-%20Conceptual%20Diagram.jpeg)
+
+![Logical Architectural Diagram](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Conceptual_Diagram.jpeg)
 - [Live Logical Diagram as shown above on Lucid chart](https://lucid.app/lucidchart/cd526c7d-0a59-4b3a-b61a-ef5e019293fe/edit?page=0_0&invitationId=inv_5ba96d4e-22e1-4db8-84b5-5fbef5a1739c#)
 
 ## Napkin design
@@ -11,7 +12,7 @@ Set up accounts on the lucid and come up with the Logical diagram.
 Napkin / tissue design method of 
 coming up with architecture; drawing out your architecture at a high level but in a way where the conceptual flow makes sense.
 
-![Napkin design](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur%20-%20Napkin%20design%20main.JPG)
+![Napkin design](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Napkin_design_main.JPG)
 
 ## Challenges:
 Week 0
@@ -25,13 +26,13 @@ Tasks:
 ![$10 dollar Budget](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Budget.JPG)
 - Activated the AWS cost allocation tags.
 - Investigate costs through cost explorer.
-![Cost explorer](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cost%20explorer.JPG)
+![Cost explorer](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cost_explorer.JPG)
 
 > Note: It cost me $3.48 dollars to buy my domain via Route 53 and an additional $0.50 dollars for Route 53 Hosted zones. 
 - Checked out the Free tier services and compared them to the trial services.
 - Created a new User with CLI priviledges. <br/>
 The user is configured with MFA, Access keys and access policies.
-![New User with CLI privilege](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/CLIPriviledgesAccesskey.jpg)
+![New User with CLI privilege](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/CLI_Priviledged_Accesskey.jpg)
 - Configure Gitpod Env vars; <br/>
 every time the gitpod environment starts, it will automatically set up a new environment with my 
     preconfigured credentails..
@@ -48,6 +49,14 @@ every time the gitpod environment starts, it will automatically set up a new env
   ![Proof of aws auto-prompt](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/aws%20cli%20autoprompt.JPG)
 
 ## Getting the AWS CLI Working
+### Create an AWS Organization
+To create multiple AWS accounts, First set up an AWS Organization. To do this, go to AWS Organizations in the Services window of the AWS Console, and click “Create an Organization”.
+
+Once the Organization is created, create a couple of nested Organizational Units to group the AWS accounts in. This can be done by clicking on the checkbox next to the Root Organization, and then selecting Actions > Organizational Unit > Create New. Sample structure:
+
+![Organizational Structure](https://www.linuxtek.ca/wp-content/uploads/2023/02/Screenshot_2023-02-07_41-26-00.png)
+
+[Steps to Follow to create an AWS Organization]https://www.linuxtek.ca/2023/02/07/aws-cloud-project-boot-camp-week-0-tips-and-tricks/#Resources
 
 ### Install AWS CLI
 
@@ -254,7 +263,7 @@ aws sts get-caller-identity --query Account --output text
         },
         "Subscribers": [
             {
-                "Address": "joshhargett.jh@gmail.com",
+                "Address": "email@emailaddress.com",
                 "SubscriptionType": "EMAIL"
             }
         ]
@@ -277,7 +286,7 @@ export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output tex
 gp env AWS_ACCOUNT_ID="XXXXXXXXXXX"
 ```
 
-We then store the variable in the budget creation code: 
+Store the variable in the budget creation code: 
 
 ```
 aws budgets create-budget \
