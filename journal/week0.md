@@ -48,24 +48,99 @@ every time the gitpod environment starts, it will automatically set up a new env
 - Installed aws auto-prompt on the cli
   ![Proof of aws auto-prompt](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/aws%20cli%20autoprompt.JPG)
 
-## Getting the AWS CLI Working
-### Create an AWS Organization
-To create multiple AWS accounts, First set up an AWS Organization. To do this, go to AWS Organizations in the Services window of the AWS Console, and click “Create an Organization”.
+## Create an AWS Organization
+To manage multiple AWS accounts efficiently, start by setting up an AWS Organization. Follow these steps to create and configure your AWS Organization:
 
-Once the Organization is created, create a couple of nested Organizational Units to group the AWS accounts in. This can be done by clicking on the checkbox next to the Root Organization, and then selecting Actions > Organizational Unit > Create New. Sample structure:
+1. **Access AWS Organizations**: Navigate to the AWS Console, locate the Services menu, and select AWS Organizations. Click on “Create an Organization” to begin the setup process.
+
+2. **Create Organizational Units**: After your Organization is established, you can create nested Organizational Units (OUs) to group your AWS accounts. To do this, check the box next to the Root Organization, then go to Actions > Organizational Unit > Create New.
 
 ![Organizational Structure](https://www.linuxtek.ca/wp-content/uploads/2023/02/Screenshot_2023-02-07_41-26-00.png)
 
 [Steps to Follow to create an AWS Organization]https://www.linuxtek.ca/2023/02/07/aws-cloud-project-boot-camp-week-0-tips-and-tricks/#Resources
 
+## Getting the AWS CLI Working
+
+### **Setting Environement Variables**
+
+1. Open your terminal and run the following commands to set your environment variables:
+```BASH
+export AWS_ID=your_aws_id
+export AWS_ACCESS_KEY_ID=your_access_key_id
+export AWS_SECRET_ACCESS_KEY=your_secret_access_key
+```
+
+2. To persist these environment variables, you can use the `gp env` command after running the above commands:
+
+```BASH
+gp env  AWS_ID=your_aws_id
+gp env AWS_ACCESS_KEY_ID=your_access_key_id
+gp env AWS_SECRET_ACCESS_KEY=your_secret_access_key
+```
+
 ### Install AWS CLI
 
-- Install the AWS CLI when our Gitpod enviroment launches.
-- Set AWS CLI to use partial autoprompt mode to make it easier to debug CLI commands.
+- To set up the AWS CLI in your Gitpod environment and enable partial autoprompt mode for easier command debugging, follow these steps. The commands are based on the AWS CLI Install Instructions.
 - The bash commands to be used are the same as the [AWS CLI Install Instructions]https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 
+To install the AWS CLI, you can follow these steps:
 
-Update `.gitpod.yml` to include the following task to auto-install `aws-cli` whenever the environment gets restarted..
+1. Download the AWS CLI package from the [AWS website](https://aws.amazon.com/cli/).
+```BASH
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+```
+2. Unzip the package.
+```bash
+unzip awscliv2.zip
+```
+3. Run the `install` script.
+```bash
+sudo ./aws/install
+```
+4. Verify the installation:
+```bash
+aws --version
+```
+> This will print the version of the AWS CLI that is installed.
+
+To set the AWS CLI to use `partial autoprompt mode`, follow these steps:
+
+## **AWS CLI auto-prompt**
+
+The AWS CLI auto-prompt is a feature that allows you to use the `Enter` key to complete commands. <br>This can save you time and effort when you are using the AWS CLI.
+- Enable partial autoprompt mode:
+```bash
+aws configure set cli_auto_prompt partial
+```
+
+To enable the AWS CLI auto-prompt, add the following lines to your `.bashrc` file:
+```bash
+
+export AWS_CLI_AUTO_PROMPT=on
+export PS1="\[\033[38;5;247m\]\u\[$(tput sgr0)\]\[\033[38;5;15m\]@\[$(tput sgr0)\]\[\033[38;5;243m\]\h\[$(tput sgr0)\]\[\033[38;5;15m\]:\[$(tput sgr0)\]\[\033[38;5;47m\]\w\[$(tput sgr0)\]\[\033[38;5;15m\]\\$ \[$(tput sgr0)\]"
+
+
+```
+### Checking AWS Connections with Console
+
+After installing the AWS CLI, you can verify your connection to AWS by running the following command:
+```bash
+aws sts get-caller-identity
+```
+This command will return your AWS account ID, AWS Region, and ARN.
+
+To retrieve and store your AWS account ID in an environment variable, use the following command:
+```bash
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+```
+This command assigns your AWS account ID to the `AWS_ACCOUNT_ID` environment variable, allowing you to use this variable in other AWS CLI commands.
+
+
+### Gitpod
+
+To enable AWS CLI `auto-prompt` in your Gitpod environment, follow these instructions:
+
+Update your `.gitpod.yml` file to include the following task. This will ensure the `aws-cli` is automatically installed whenever the environment is restarted.
 
 ```sh
 tasks:
@@ -79,39 +154,41 @@ tasks:
       sudo ./aws/install
       cd $THEIA_WORKSPACE_ROOT
 ```
-### Create a new User and Generate AWS Credentials
+This configuration sets up the AWS CLI with auto-prompt mode enabled, making it easier to use CLI commands in your Gitpod environment.
 
-- Go to (IAM Users Console](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/users) and create a new user.
-- `Enable console access` for the user
-- Create a new `Admin` Group and apply `AdministratorAccess`
-- Create the user and go find and click into the user
-- Click on `Security Credentials` and `Create Access Key`
+### Steps to Create a new User and Generate AWS Credentials
+
+- Navigate to the (IAM Users Console](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/users) and create a new user.
+- Enable `console access` for the user
+- Create a new `Admin` Group and attach the `AdministratorAccess` policy to it.
+- Create the user and then locate and click on the user.
+- Click on `Security Credentials` tab and select `Create Access Key`.
 - Choose `AWS CLI Access`.
-- Download the CSV with the credentials and save them.
+- Download the CSV file containing the credentials and save it securely.
 
-### Set Env Vars
+### Set Environment Variables
 
-We will set these credentials for the current bash terminal
+To set your AWS credentials for the current bash terminal, use the following commands:
 ```
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_DEFAULT_REGION=us-east-1
 ```
 
-Instructing Gitpod to store these credentials:
+To instruct Gitpod to store these credentials, use the following commands:
 ```
 gp env AWS_ACCESS_KEY_ID=""
 gp env AWS_SECRET_ACCESS_KEY=""
 gp env AWS_DEFAULT_REGION=us-east-1
 ```
 
-### Check that the AWS CLI is working and you are the expected user
-
+### Verify AWS CLI Functionality and Identity
+To check that the AWS CLI is working and confirm your identity, run the following command:
 ```sh
 aws sts get-caller-identity
 ```
 
-You should see something like this:
+You should see a response similar to this:
 ```json
 {
     "UserId": "AIDAS4FSKHSZNLYLHDK2B",
@@ -122,25 +199,26 @@ You should see something like this:
 
 ## Enable Billing Alerts
 
-- On your AWS Root Account go to the [Billing Page](https://console.aws.amazon.com/billing/)
-- Under `Billing Preferences` Choose `Receive Billing Alerts`
-- Save Preferences
+To enable billing alerts on your AWS Root Account, follow these steps:
+- Go to the [Billing Page](https://console.aws.amazon.com/billing/) on your AWS Root Account.
+- Under `Billing Preferences` select `Receive Billing Alerts`
+- Save your preferences to activate billing alerts for your AWS account.
 
 ## Creating a Billing Alarm
 
 ### Create SNS Topic
 
-- We need an SNS topic before we create an alarm.
-- The SNS topic is what will delivery us an alert when we get overbilled
-- [aws sns create-topic](https://docs.aws.amazon.com/cli/latest/reference/sns/create-topic.html)
+- Before creating the alarm, we need to set up an SNS topic:
+- The SNS topic will deliver alerts when there are billing overages.
+- Utilize the [aws sns create-topic](https://docs.aws.amazon.com/cli/latest/reference/sns/create-topic.html) command to create the topic.
 
-Create a SNS Topic
+Create an SNS Topic
 ```sh
 aws sns create-topic --name billing-alarm
 ```
-> Returns a TopicARN
+> This command will return a TopicARN.
 
-Create a subscription - input the `TopicARN` and your `Email`
+Then, create a subscription by providing the `TopicARN` and your `Email`:
 ```sh
 aws sns subscribe \
     --topic-arn TopicARN \
@@ -152,12 +230,12 @@ aws sns subscribe \
 
 #### Create Alarm
 
-- [aws cloudwatch put-metric-alarm](https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html)
+- To create the alarm, use the [aws cloudwatch put-metric-alarm](https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html) command.
 - [Create an Alarm via AWS CLI](https://aws.amazon.com/premiumsupport/knowledge-center/cloudwatch-estimatedcharges-alarm/)
 - We need to update the configuration json script with the TopicARN we generated earlier
 - We are just a json file because --metrics is is required for expressions and so its easier to use a JSON file.
 
-Create the alarm_config file necessary for the alarm itself `alarm_config.json`:
+1. Prepare the `alarm_config.json` file:
 
 ```
 {
@@ -196,24 +274,23 @@ Create the alarm_config file necessary for the alarm itself `alarm_config.json`:
     }]
   }
 ```
-Run the alarm:
+2. Run the command to create the alarm:
 
 ```sh
 aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.json
 ```
+This setup will create a billing alarm to monitor daily estimated charges and trigger an alert if they exceed $1.
 
 ## Create an AWS Budget
+To create an AWS budget, utilize the
+[aws budgets create-budget](https://docs.aws.amazon.com/cli/latest/reference/budgets/create-budget.html) command.
 
-[aws budgets create-budget](https://docs.aws.amazon.com/cli/latest/reference/budgets/create-budget.html)
-
-Get your AWS Account ID
+First, retrieve your AWS Account ID using the following command:
 ```sh
 aws sts get-caller-identity --query Account --output text
 ```
 
-- Supply your AWS Account ID
-- Update the json files
-- This is another case with AWS CLI its just much easier to json files due to lots of nested json
+- Next, update the JSON files `budget.json` and `budget-notifications-with-subscribers.json` as needed.
 
 `budget.json`:
 ```
@@ -271,7 +348,7 @@ aws sts get-caller-identity --query Account --output text
   ]
   <sub>This code is for the notifications.</sub>
 ```
-Create the budget:
+Create the budget using the AWS CLI:
 ```sh
 aws budgets create-budget \
     --account-id AccountID \
@@ -286,7 +363,7 @@ export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output tex
 gp env AWS_ACCOUNT_ID="XXXXXXXXXXX"
 ```
 
-Store the variable in the budget creation code: 
+Then, include the variable in the budget creation code:
 
 ```
 aws budgets create-budget \
@@ -294,3 +371,202 @@ aws budgets create-budget \
     --budget file://aws/json/budget.json \
     --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
 ```
+
+## Serverless Notification API
+
+A serverless notification API is a sophisticated application leveraging AWS Lambda and Amazon SNS to deliver email notifications to subscribers seamlessly.
+
+- [Setting up Post Notification](#setting-up-post-notification) <br/>
+    To initiate the notification system.
+1. [Create Lambda](#create-lambda) <br/>
+    Begin by crafting a Lambda function capable of processing POST requests containing a name and message payload. The function will then propagate this data to an SNS topic, which in turn dispatches email notifications to subscribed users.
+   - [Granting SNS Access to the Lambda Function](#granting-sns-access-to-the-lambda-function) <br />
+   Ensure the Lambda function has appropriate permissions to interact with Amazon SNS.
+2. [Test Post Endpoint](#test-post-endpoint) <br />
+    Verify the functionality of the POST endpoint by sending test requests and confirming the receipt of email notifications by subscribers.
+
+The API works by first creating a Lambda function that accepts POST requests with a name and message. The Lambda function then publishes an SNS message with the name and message to a topic. The SNS topic is configured to send email notifications to subscribers.
+
+The flowchart below illustrates the process intricately:
+* An API receives a POST request with a JSON payload containing a `name` and `message`.
+* The Lambda function processes the request and extracts the `name` and `message` from the payload.
+```yaml
+       API Request (POST)       Lambda Function      SNS Topic             Email Subscribers
+      +------------------>   +----------------->  +-------------------->  +-----------------+ 
+  H   |                      |                    |                    |  | List of EMAILs; | Y
+  E   |    {                 |   {                |   {                |  |                 | A
+  L   |   "name": "Steve",    |   "name": "Steve",  |   "name": "Steve",  |  |                 | Y
+  L   |   "message": "Hey"   |  "message": "Hey"  |   "message": "Hey" |  |      e.g.       | A
+  O   |    }                 |   }                |   }                |  |                 | 2
+      |                      |                    |                    |  |   Steve Email    | D
+  T   +<------------------   +<-----------------  +<-----------------  |  |   Yours, etc.   | E
+  H   |    HTTP Response     |    Publish SNS     |    Send Email      |  |                 | V
+  E   |                      |    Message         |    Notifications   |  |                 | O
+  R   |     Status 200       |    with            |    to Subscribers  |  |                 | P
+  E   |                      |    name & message  |                    |  |                 | S
+      +----------------------+--------------------+--------------------+  +-----------------+ 
+```
+* This structured approach ensures seamless communication and reliable delivery of notifications, providing users with timely updates through email.
+
+### Setting up Post Notification
+
+To establish post notifications, follow these steps:
+
+1. Create a new SNS topic and subscribe to it using the provided AWS command:
+```bash
+aws sns create-topic --name <topic-name>
+```
+Upon successful creation, note the SNS Topic's Amazon Resource Name (ARN) for future reference. <br/>
+Example output:
+```bash
+{
+    "TopicArn": "arn:aws:sns:<region>:<aws-id>:<topic-name>"
+}
+```
+2. Subscribe to the recently created SNS topic using the following AWS command. Replace `<region>` with your AWS region, `<account-id>` with your AWS account ID, and `<email>` with the email address designated for receiving notifications:
+
+```bash
+aws sns subscribe \
+--topic-arn arn:aws:sns:<region>:<account-id>:<topic-name> \
+--protocol email \
+--notification-endpoint <email>
+```
+
+3. Confirm your subscription to the topic.
+
+
+### Create Lambda
+
+To set up the Lambda function for handling notifications, follow these steps:
+1. Create a Lambda function with Python `3.9` runtime.
+2. Enable the function URL in the Lambda function configuration 
+3. Ensure that authentication is not required for access to the function URL [leave both steps for later.](#assign-url-for-lambda)
+3. Use the provided Python code for the Lambda function:
+
+```py
+import json
+import boto3
+
+def lambda_handler(event, context):
+    
+    client = boto3.client('sns')
+    snsArn = 'arn:aws:sns:<REGION>:<ACCOUNT ID>:<topic-name>'
+    
+    body = json.loads(event.get("body"))
+    
+    
+    response = client.publish(
+        TopicArn = snsArn,
+        Message = body.get("message"),
+        Subject= f"Hello {body['name']}"
+    )
+    
+    return {
+      'statusCode': 200,
+      'body': json.dumps(response)
+   }
+```
+4. Assign the SNS ARN to the `sns_arn `variable in the Lambda function code.
+5. Deploy the Lambda function.
+
+### **Granting SNS Access to the Lambda Function**
+
+You need to enable SNS access to the Lambda function:
+
+1. Go to the Lambda Function in the AWS Management Console.
+2. Click on the **Configuration** tab.
+3. In the **Permissions** section, click on the the Role name associated with the Lambda function.
+4. Under **Permissions**, click on **Add Permission**.
+5. Choose **Attach Policies** to proceed.
+6. Filter the policy list and search **AmazonSNSFullAccess**.
+7. Select **AmazonSNSFullAccess** and attach it to the Lambda function's role.
+
+### Assign URL for Lambda
+Generate an URL for the Lambda function:
+
+1. Open the `configuration pane`.
+2. In the left pane, navigate to the `Function URL` section.
+3. Generate a new URL and select the `No Authorization` option (`Auth Type; NONE`).
+4. Ensure the policy statements have been updated as shown below:
+```JSON
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "StatementId": "FunctionURLAllowPublicAccess",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "lambda:InvokeFunctionUrl",
+      "Resource": "arn:aws:lambda:<region>:<aws-id>:function:postapi",
+      "Condition": {
+        "StringEquals": {
+          "lambda:FunctionUrlAuthType": "NONE"
+        }
+      }
+    }
+  ]
+}
+```
+
+### Test Post Endpoint
+
+1. Open Thunder Client / PostMan or any other **API testing tool**.
+
+2. Send a POST request to the Lambda function URL with a name and message payload.
+
+3. Use the following curl command as an example: 
+```bash
+curl --request POST \
+  --url     'https://yours.lambda-url.<region>.on.aws/' \
+  --header 'Content-Type: application/json' \
+  --data '{"name": "SteveJoe", "message": "NOTIFIED: Lambda Post Triggered"}'
+```
+Replace `https://yours.lambda-url.<region>.on.aws/` with the actual Lambda function URL.
+
+4. Verify that your API tool returns a `200 OK` status on success.
+
+5. Check your subscribed email for the post notification.
+
+
+## Creating a CloudWatch Alarm
+
+A CloudWatch alarm serves as a vital tool for monitoring AWS resources and triggering actions when certain thresholds are exceeded. These alarms are instrumental in cost optimization and troubleshooting efforts.
+
+To create a CloudWatch alarm, follow these steps:
+1. Prepare a CloudWatch alarm JSON file outlining the alarm's configuration, including its name, the metric to monitor, the threshold, and any specified actions.
+2. Execute the following command to create the alarm using the JSON file:
+```
+aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.json
+```
+
+Upon successful execution, the CloudWatch alarm will be created. You can then verify the alarm, particularly its trigger conditions, focusing on daily estimated charges, to ensure its effectiveness in monitoring resource usage and cost management.
+
+## To be done:
+> Implement Monitoring: <br/>
+Implementing monitoring involves setting up monitoring tools and practices to track the performance and health of your AWS resources. Here's how you can implement monitoring:
+
+1. Set Up CloudWatch Monitoring: Configure Amazon CloudWatch to monitor metrics for your AWS resources, such as EC2 instances, RDS databases, and Lambda functions.
+2. Create Custom Metrics: Create custom CloudWatch metrics to monitor specific application-level metrics that are relevant to your SLAs.
+3. Configure CloudWatch Alarms: Set up CloudWatch alarms to automatically notify you when predefined thresholds are exceeded for any monitored metric.
+4. Use AWS Trusted Advisor: Utilize AWS Trusted Advisor to gain insights into your AWS environment and receive recommendations for optimizing performance, security, and cost.
+5. Implement Log Monitoring: Set up log monitoring using AWS CloudWatch Logs to collect, monitor, and analyze log data from your AWS resources. Use CloudWatch Logs Insights to query and visualize log data for troubleshooting and analysis.
+
+> Cost Allocation Tags: <br/>
+Cost allocation tags are key-value pairs that you can assign to AWS resources to categorize and track their costs. Here's how you can implement cost allocation tags:
+
+1. Define Tagging Strategy: Define a tagging strategy that aligns with your organization's cost tracking and reporting requirements. Determine which tags you will use and what information they will represent (e.g., department, project, environment).
+
+2. Apply Tags to Resources: Apply cost allocation tags to your AWS resources using the AWS Management Console, AWS CLI, or AWS SDKs. Assign appropriate tags to each resource based on your tagging strategy.
+
+3. Enable Cost Allocation Tags: Enable cost allocation tags in the AWS Billing and Cost Management console. Configure cost allocation tags to be included in your AWS Cost Explorer reports and cost allocation reports.
+
+4. Analyze Cost Data: Use AWS Cost Explorer to analyze your AWS costs by tag. Generate cost reports and visualizations to understand cost trends, identify cost drivers, and optimize resource usage.
+
+5. Automate Tagging: Implement automation to ensure consistent and accurate tagging of AWS resources. Use AWS Config rules, AWS Lambda functions, or third-party tools to automatically apply tags based on predefined rules or resource attributes.
+
+## Conclusion
+The implementation of best practices outlined in this document demonstrates a comprehensive approach to AWS infrastructure management and DevOps excellence. By incorporating robust monitoring, we ensure the reliability, availability, and performance of our AWS resources, aligning them closely with business objectives. This proactive monitoring not only allows us to meet SLA commitments but also enables us to swiftly identify and address any issues, thereby minimizing downtime and optimizing resource utilization.
+
+Moreover, the adoption of cost allocation tags exemplifies our commitment to cost optimization and financial accountability. By accurately tagging and tracking costs across our AWS environment, we gain invaluable insights into resource consumption, identify cost drivers, and implement targeted optimization strategies. This meticulous approach to cost management not only safeguards against overspending but also facilitates informed decision-making and resource allocation.
+
+Together, these practices underscore our expertise in architecting resilient, scalable, and cost-effective solutions on AWS. By adhering to industry best practices and leveraging cutting-edge tools and technologies, we ensure the delivery of high-quality services that meet and exceed customer expectations. As we continue to refine and evolve our practices, we remain steadfast in our pursuit of operational excellence and innovation in the ever-changing landscape of cloud computing.
