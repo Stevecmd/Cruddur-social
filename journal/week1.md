@@ -74,10 +74,11 @@ https://code.visualstudio.com/docs/containers/overview
 > Gitpod is preinstalled with this extension
 <hr/>
 
-## Containerize Backend
 Container repo's:
 - [DockerHub](https://hub.docker.com/)
 - [Jfrog](https://jfrog.com/) - For artifacts / images
+
+## Containerize Backend
 
 ### Run Python
 
