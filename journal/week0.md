@@ -15,10 +15,23 @@ coming up with architecture; drawing out your architecture at a high level but i
 ![Napkin design](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Napkin_design_main.JPG)
 
 ## Challenges:
-Week 0
-- Generate credentials,
-- AWS CLI setup,
-- Create Budget and Billing Alarms via CLI.
+---
+**Todo Checklist:**
+- [x] [Watched Week 0 - Live Streamed Video](https://www.youtube.com/watch?v=tDPqmwKMP7Y&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=29)
+- [x] [Watched Chirag's Week 0 - Spend Considerations](https://www.youtube.com/watch?v=FKAScachFgk&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=25)
+- [x] [Watched Ashish's Week 0 - Security Considerations](https://www.youtube.com/watch?v=zJnNe5Nv4tE&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=22)
+- [x] [Recreate Conceptual Diagram in Lucid Charts or on a Napkin](https://www.youtube.com/watch?v=b-idMgFFcpg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=23)
+- [x] [Recreate Logical Architectual Diagram in Lucid Charts](https://www.youtube.com/watch?v=OAMHu1NiYoI&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=24)
+- [x] [Create an Admin User](https://www.youtube.com/watch?v=OdUnNuKylHg&list=PLBfufR7vyJJ7k25byhRXJldB5AiwgNnWv&index=14)
+- [x] Use CloudShell
+- [x] Generate AWS Credentials
+- [x] Installed AWS CLI
+- [x] Create a Billing Alarm
+- [x] Create a Budget
+
+- [x] Complete 100% of the tasks
+
+<hr/>
 
 Tasks:
 - Create the Cruddur Logical Architectural diagram and napkin design.
@@ -155,6 +168,7 @@ tasks:
       cd $THEIA_WORKSPACE_ROOT
 ```
 This configuration sets up the AWS CLI with auto-prompt mode enabled, making it easier to use CLI commands in your Gitpod environment.
+- The bash commands we used are the same as the [AWS CLI Install Instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ### Steps to Create a new User and Generate AWS Credentials
 
@@ -199,12 +213,42 @@ You should see a response similar to this:
 
 ## Enable Billing Alerts
 
-To enable billing alerts on your AWS Root Account, follow these steps:
-- Go to the [Billing Page](https://console.aws.amazon.com/billing/) on your AWS Root Account.
-- Under `Billing Preferences` select `Receive Billing Alerts`
-- Save your preferences to activate billing alerts for your AWS account.
+Turn on Billing Alerts to recieve alerts...
 
-## Creating a Billing Alarm
+- In your Root Account go to the [Billing Page](https://console.aws.amazon.com/billing/)
+- Under `Billing Preferences` Choose `Receive Billing Alerts`
+- Save Preferences
+
+<hr/>
+
+## Creating a Billing Alarm via CLI
+
+- Supply your AWS Account ID:
+  ```sh
+  ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+  ```
+
+- Confirm that your AWS Account ID is valid:
+  ```sh
+  aws sts get-caller-identity --query Account --output text
+  ```
+
+- Make your AWS Account ID an env var:
+  ```sh
+  export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+  ```
+
+- Confirm your AWS Account ID env var has been saved:
+  ```
+  env | grep AWS_ACCOUNT_ID
+  ```
+  
+- Export your account ID as a gitpod variable: 
+  ```
+  export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+  gp env AWS_ACCOUNT_ID="<insert account id>"
+   ```
 
 ### Create SNS Topic
 
@@ -228,6 +272,88 @@ aws sns subscribe \
 
 **Confirm the email subscription.** by visiting your email inbox.
 
+### Create an AWS Budget
+
+[aws budgets create-budget](https://docs.aws.amazon.com/cli/latest/reference/budgets/create-budget.html)
+
+- Create a folder at the top level named aws if it is not already there, in it create a folder named json: 
+  ```
+  cd aws-bootcamp-cruddur-2024
+  mkdir aws
+  cd aws
+  mkdir json
+  cd json
+   ```
+
+  
+- Update the json files in aws/json :
+Create a file named 'budget.json' and insert the code below:
+```sh
+{
+    "BudgetLimit": {
+        "Amount": "1",
+        "Unit": "USD"
+    },
+    "BudgetName": "Example Tag Budget",
+    "BudgetType": "COST",
+    "CostFilters": {
+        "TagKeyValue": [
+            "user:Key$value1",
+            "user:Key$value2"
+        ]
+    },
+    "CostTypes": {
+        "IncludeCredit": true,
+        "IncludeDiscount": true,
+        "IncludeOtherSubscription": true,
+        "IncludeRecurring": true,
+        "IncludeRefund": true,
+        "IncludeSubscription": true,
+        "IncludeSupport": true,
+        "IncludeTax": true,
+        "IncludeUpfront": true,
+        "UseBlended": false
+    },
+    "TimePeriod": {
+        "Start": 1477958399,
+        "End": 3706473600
+    },
+    "TimeUnit": "MONTHLY"
+}
+```
+
+Create a file named `budget-notifications-with-subscribers.json` and insert the code below:
+```sh
+[
+    {
+        "Notification": {
+            "ComparisonOperator": "GREATER_THAN",
+            "NotificationType": "ACTUAL",
+            "Threshold": 80,
+            "ThresholdType": "PERCENTAGE"
+        },
+        "Subscribers": [
+            {
+                "Address": "<Your email>",
+                "SubscriptionType": "EMAIL"
+            }
+        ]
+    }
+]
+```
+Then run the following code in the CLI:
+
+```sh
+cd aws-bootcamp-cruddur-2024
+```
+```sh
+aws budgets create-budget \
+    --account-id $ACCOUNT_ID \
+    --budget file://aws/json/budget.json \
+    --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
+```
+<hr/>
+
 #### Create Alarm
 
 - To create the alarm, use the [aws cloudwatch put-metric-alarm](https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html) command.
@@ -235,15 +361,15 @@ aws sns subscribe \
 - We need to update the configuration json script with the TopicARN we generated earlier
 - We are just a json file because --metrics is is required for expressions and so its easier to use a JSON file.
 
-1. Prepare the `alarm_config.json` file:
+1. Prepare the `aws/json/alarm-config.json` and insert the following code and also edit the ACCOUNT_ID to match your aws account id::
 
-```
+```sh
 {
     "AlarmName": "DailyEstimatedCharges",
     "AlarmDescription": "This alarm would be triggered if the daily estimated charges exceeds 1$",
     "ActionsEnabled": true,
     "AlarmActions": [
-        "arn:aws:sns:us-east-1:XXXXXXXXXX:billing-alarm"
+        "arn:aws:sns:us-east-1:<ACCOUNT_ID>:billing-alarm"
     ],
     "EvaluationPeriods": 1,
     "DatapointsToAlarm": 1,
@@ -274,6 +400,7 @@ aws sns subscribe \
     }]
   }
 ```
+
 2. Run the command to create the alarm:
 
 ```sh
@@ -371,6 +498,26 @@ aws budgets create-budget \
     --budget file://aws/json/budget.json \
     --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
 ```
+## Add the Backend dependencies to the requirements file
+File location:
+```sh
+backend-flask/requirements.txt
+```
+Dependencies to be added:
+```txt
+flask
+flask-cors
+opentelemetry-api 
+opentelemetry-sdk 
+opentelemetry-exporter-otlp-proto-http 
+opentelemetry-instrumentation-flask 
+opentelemetry-instrumentation-requests
+aws-xray-sdk
+watchtower
+blinker
+rollbar
+```
+<hr/>
 
 ## Serverless Notification API
 
@@ -545,11 +692,11 @@ Upon successful execution, the CloudWatch alarm will be created. You can then ve
 > Implement Monitoring: <br/>
 Implementing monitoring involves setting up monitoring tools and practices to track the performance and health of your AWS resources. Here's how you can implement monitoring:
 
-1. Set Up CloudWatch Monitoring: Configure Amazon CloudWatch to monitor metrics for your AWS resources, such as EC2 instances, RDS databases, and Lambda functions.
-2. Create Custom Metrics: Create custom CloudWatch metrics to monitor specific application-level metrics that are relevant to your SLAs.
-3. Configure CloudWatch Alarms: Set up CloudWatch alarms to automatically notify you when predefined thresholds are exceeded for any monitored metric.
-4. Use AWS Trusted Advisor: Utilize AWS Trusted Advisor to gain insights into your AWS environment and receive recommendations for optimizing performance, security, and cost.
-5. Implement Log Monitoring: Set up log monitoring using AWS CloudWatch Logs to collect, monitor, and analyze log data from your AWS resources. Use CloudWatch Logs Insights to query and visualize log data for troubleshooting and analysis.
+1. `Set Up CloudWatch Monitoring`: Configure Amazon CloudWatch to monitor metrics for your AWS resources, such as EC2 instances, RDS databases, and Lambda functions.
+2. `Create Custom Metrics`: Create custom CloudWatch metrics to monitor specific application-level metrics that are relevant to your SLAs.
+3. `Configure CloudWatch Alarms`: Set up CloudWatch alarms to automatically notify you when predefined thresholds are exceeded for any monitored metric.
+4. `Use AWS Trusted Advisor`: Utilize AWS Trusted Advisor to gain insights into your AWS environment and receive recommendations for optimizing performance, security, and cost.
+5. `Implement Log Monitoring`: Set up log monitoring using AWS CloudWatch Logs to collect, monitor, and analyze log data from your AWS resources. Use CloudWatch Logs Insights to query and visualize log data for troubleshooting and analysis.
 
 > Cost Allocation Tags: <br/>
 Cost allocation tags are key-value pairs that you can assign to AWS resources to categorize and track their costs. Here's how you can implement cost allocation tags:
@@ -570,3 +717,60 @@ The implementation of best practices outlined in this document demonstrates a co
 Moreover, the adoption of cost allocation tags exemplifies our commitment to cost optimization and financial accountability. By accurately tagging and tracking costs across our AWS environment, we gain invaluable insights into resource consumption, identify cost drivers, and implement targeted optimization strategies. This meticulous approach to cost management not only safeguards against overspending but also facilitates informed decision-making and resource allocation.
 
 Together, these practices underscore our expertise in architecting resilient, scalable, and cost-effective solutions on AWS. By adhering to industry best practices and leveraging cutting-edge tools and technologies, we ensure the delivery of high-quality services that meet and exceed customer expectations. As we continue to refine and evolve our practices, we remain steadfast in our pursuit of operational excellence and innovation in the ever-changing landscape of cloud computing.
+
+## Save the work on its own branch named "week-0"
+```sh
+cd aws-bootcamp-cruddur-2024
+git checkout -b week-0
+```
+<hr/>
+
+## Commit
+Add the changes and create a commit named: "Install AWS CLI into Gitpod tasks"
+```sh
+git add .
+git commit -m "Install AWS CLI into Gitpod tasks"
+```
+Push your changes to the branch
+```sh
+git push origin week-0
+```
+<hr/>
+
+### Tag the commit
+```sh
+git tag -a week-0 -m "Setting up project env vars"
+```
+<hr/>
+
+### Push your tags
+```sh
+git push --tags
+```
+<hr/>
+
+### Switching Between Branches back to Main
+```sh
+git checkout main
+```
+<hr/>
+
+### Merge Changes
+```sh
+git merge week-0
+```
+<hr/>
+
+### Push Changes to Main
+```sh
+git push origin main
+```
+<hr/>
+
+#### Branches?
+If you want to keep the "week-1" branch for future reference or additional work, 
+you can keep it as is. If you no longer need the branch, you can delete it after merging.
+```sh
+git branch -d week-0  # Deletes the local branch
+git push origin --delete week-0  # Deletes the remote branch
+```
