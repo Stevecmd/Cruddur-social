@@ -226,35 +226,6 @@ Turn on Billing Alerts to recieve alerts...
 
 <hr/>
 
-## Creating a Billing Alarm via CLI
-
-- Supply your AWS Account ID:
-  ```sh
-  ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-  ```
-
-- Confirm that your AWS Account ID is valid:
-  ```sh
-  aws sts get-caller-identity --query Account --output text
-  ```
-
-- Make your AWS Account ID an env var:
-  ```sh
-  export ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-  ```
-
-- Confirm your AWS Account ID env var has been saved:
-  ```
-  env | grep AWS_ACCOUNT_ID
-  ```
-  
-- Export your account ID as a gitpod variable: 
-  ```
-  export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-
-  gp env AWS_ACCOUNT_ID="<insert account id>"
-   ```
-
 ### Create SNS Topic
 
 - Before creating the alarm, we need to set up an SNS topic:
@@ -286,7 +257,7 @@ aws sns subscribe \
 
 - Create a folder at the top level named aws if it is not already there, in it create a folder named json: 
   ```
-  cd aws-bootcamp-cruddur-2024
+  cd Cruddur-social
   mkdir aws
   cd aws
   mkdir json
@@ -302,7 +273,7 @@ Create a file named 'budget.json' and insert the code below:
         "Amount": "1",
         "Unit": "USD"
     },
-    "BudgetName": "Example Tag Budget",
+    "BudgetName": "One-Dollar-Budget",
     "BudgetType": "COST",
     "CostFilters": {
         "TagKeyValue": [
@@ -352,7 +323,7 @@ Create a file named `budget-notifications-with-subscribers.json` and insert the 
 Then run the following code in the CLI:
 
 ```sh
-cd aws-bootcamp-cruddur-2024
+cd Cruddur-social
 ```
 ```sh
 aws budgets create-budget \
@@ -367,9 +338,9 @@ aws budgets create-budget \
 - To create the alarm, use the [aws cloudwatch put-metric-alarm](https://docs.aws.amazon.com/cli/latest/reference/cloudwatch/put-metric-alarm.html) command.
 - [Create an Alarm via AWS CLI](https://aws.amazon.com/premiumsupport/knowledge-center/cloudwatch-estimatedcharges-alarm/)
 - We need to update the configuration json script with the TopicARN we generated earlier
-- We are just a json file because --metrics is is required for expressions and so its easier to use a JSON file.
+- We are just a json file because --metrics is required for expressions and so its easier to use a JSON file.
 
-1. Prepare the `aws/json/alarm-config.json` and insert the following code and also edit the `ACCOUNT_ID` to match your `aws account id`:
+1. Prepare the `aws/json/alarm_config.json` and insert the following code and also edit the `ACCOUNT_ID` to match your `aws account id`:
 
 ```sh
 {
@@ -462,7 +433,7 @@ aws sts get-caller-identity --query Account --output text
   }
 ```
 
-`budget-notifications-with-subscribers,json`:
+`budget-notifications-with-subscribers.json`:
 
 ```
 [
@@ -493,14 +464,14 @@ aws budgets create-budget \
 
 Store `Account id` as an environmental variable:
 
-```
+```sh
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-gp env AWS_ACCOUNT_ID="XXXXXXXXXXX"
+gp env AWS_ACCOUNT_ID=XXXXXXXXXXX
 ```
 
 Then, include the variable in the budget creation code:
 
-```
+```sh
 aws budgets create-budget \
     --account-id $AWS_ACCOUNT_ID \
     --budget file://aws/json/budget.json \
@@ -588,7 +559,6 @@ aws sns subscribe \
 ```
 
 3. Confirm your subscription to the topic.
-
 
 ### Create Lambda
 
@@ -683,19 +653,6 @@ Replace `https://yours.lambda-url.<region>.on.aws/` with the actual Lambda funct
 5. Check your subscribed email for the post notification.
 
 
-## Creating a CloudWatch Alarm
-
-A CloudWatch alarm serves as a vital tool for monitoring AWS resources and triggering actions when certain thresholds are exceeded. These alarms are instrumental in cost optimization and troubleshooting efforts.
-
-To create a CloudWatch alarm, follow these steps:
-1. Prepare a CloudWatch alarm JSON file outlining the alarm's configuration, including its name, the metric to monitor, the threshold, and any specified actions.
-2. Execute the following command to create the alarm using the JSON file:
-```
-aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.json
-```
-
-Upon successful execution, the CloudWatch alarm will be created. You can then verify the alarm, particularly its trigger conditions, focusing on daily estimated charges, to ensure its effectiveness in monitoring resource usage and cost management.
-
 ## To be done:
 > Implement Monitoring: <br/>
 Implementing monitoring involves setting up monitoring tools and practices to track the performance and health of your AWS resources. Here's how you can implement monitoring:
@@ -728,7 +685,7 @@ Together, these practices underscore our expertise in architecting resilient, sc
 
 ## Save the work on its own branch named "week-0"
 ```sh
-cd aws-bootcamp-cruddur-2024
+cd Cruddur-social
 git checkout -b week-0
 ```
 <hr/>
