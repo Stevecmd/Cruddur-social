@@ -1,19 +1,5 @@
 # Week 0 — Billing and Architecture
 
-## Logical Diagram
-
-Set up accounts on the lucid and come up with the Logical diagram.
-
-![Logical Architectural Diagram](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Conceptual_Diagram.jpeg)
-- [Live Logical Diagram as shown above on Lucid chart](https://lucid.app/lucidchart/cd526c7d-0a59-4b3a-b61a-ef5e019293fe/edit?page=0_0&invitationId=inv_5ba96d4e-22e1-4db8-84b5-5fbef5a1739c#)
-
-## Napkin design
-
-Napkin / tissue design method of 
-coming up with architecture; drawing out your architecture at a high level but in a way where the conceptual flow makes sense.
-
-![Napkin design](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Napkin_design_main.JPG)
-
 ## Challenges:
 ---
 **Todo Checklist:**
@@ -35,6 +21,20 @@ coming up with architecture; drawing out your architecture at a high level but i
 
 Tasks:
 - Create the Cruddur Logical Architectural diagram and napkin design.
+### Logical Diagram
+
+Set up accounts on the lucid and come up with the Logical diagram.
+
+![Logical Architectural Diagram](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Conceptual_Diagram.jpeg)
+- [Live Logical Diagram as shown above on Lucid chart](https://lucid.app/lucidchart/cd526c7d-0a59-4b3a-b61a-ef5e019293fe/edit?page=0_0&invitationId=inv_5ba96d4e-22e1-4db8-84b5-5fbef5a1739c#)
+
+### Napkin design
+
+Napkin / tissue design method of 
+coming up with architecture; drawing out your architecture at a high level but in a way where the conceptual flow makes sense.
+
+![Napkin design](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Cruddur-Napkin_design_main.JPG)
+
 - Created a Budget to track my spend and put a fixed amount of $10. 
 ![$10 dollar Budget](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Budget.JPG)
 - Activated the AWS cost allocation tags.
@@ -68,24 +68,20 @@ To manage multiple AWS accounts efficiently, start by setting up an AWS Organiza
 
 2. **Create Organizational Units**: After your Organization is established, you can create nested Organizational Units (OUs) to group your AWS accounts. To do this, check the box next to the Root Organization, then go to Actions > Organizational Unit > Create New.
 
+![Organizational Structure](https://www.linuxtek.ca/wp-content/uploads/2023/02/Screenshot_2023-02-07_41-26-00.png)
+
+Once the organizational unit is created, you can then create a new account under it. <br />
+In order to create multiple accounts using the same email, one may use the format <br />
+"example+1@gmail.com" the `+1`, `+2` etc are used to append new account details to the same email. <br />
+
+![Add an Account](https://github.com/Stevecmd/Cruddur-social/blob/week-0/journal/Week%200/Organization/Add%20account.JPG)
+
+![Creating MFA security](https://github.com/Stevecmd/Cruddur-social/blob/week-0/journal/Week%200/Organization/MFA/IAM%202%20MFA%20device.JPG)
+
+![Secure Account with MFA and Access Keys](https://github.com/Stevecmd/Cruddur-social/blob/week-0/journal/Week%200/Organization/MFA/MFA%20and%20Access%20Keys%20Final.JPG)
+
+
 ## Getting the AWS CLI Working
-
-### **Setting Environment Variables**
-
-1. Open your terminal and run the following commands to set your environment variables:
-```BASH
-export AWS_ID=your_aws_id
-export AWS_ACCESS_KEY_ID=your_access_key_id
-export AWS_SECRET_ACCESS_KEY=your_secret_access_key
-```
-
-2. To persist these environment variables, you can use the `gp env` command after running the above commands:
-
-```BASH
-gp env  AWS_ID=your_aws_id
-gp env AWS_ACCESS_KEY_ID=your_access_key_id
-gp env AWS_SECRET_ACCESS_KEY=your_secret_access_key
-```
 
 ### Install AWS CLI
 
@@ -559,6 +555,7 @@ aws sns subscribe \
 ```
 
 3. Confirm your subscription to the topic.
+![SNS Email subscription confirmation](https://github.com/Stevecmd/Cruddur-social/blob/Documentation/journal/Week%200/SNS%20subscription.JPG)
 
 ### Create Lambda
 
