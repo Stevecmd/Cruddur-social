@@ -80,27 +80,12 @@ Container repo's:
 
 ## Containerize Backend
 
-### Run Python
-
-```sh
-cd backend-flask
-export FRONTEND_URL="*"
-export BACKEND_URL="*"
-python3 -m flask run --host=0.0.0.0 --port=4567
-cd ..
-```
-
-- make sure to unlock the port on the port tab
-- open the link for 4567 in your browser
-- append to the url to `/api/activities/home`
-- you should get back json
-
 ![Containerize Backend](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/Working%20container%20from%20docker%20image.JPG)
 
 <hr/>
 
 ### Containerize Backend
-
+> Create Docker File
 Create a file here: `backend-flask/Dockerfile`
 
 ```dockerfile
@@ -140,11 +125,20 @@ CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567"]
 
 <hr/>
 
-On the terminal run:
+### Run Python
+
 ```sh
+cd backend-flask
 export FRONTEND_URL="*"
 export BACKEND_URL="*"
+python3 -m flask run --host=0.0.0.0 --port=4567
+cd ..
 ```
+
+- make sure to unlock the port on the port tab
+- open the link for 4567 in your browser
+- append to the url to `/api/activities/home`
+- you should get back json
 
 <bold>NB:</bold>To unset the env vars run the code below:
 ```sh
@@ -227,7 +221,7 @@ docker container run --rm -p 4567:4567 -d backend-flask
 
 <hr/>
 
-Return the container id into an Env Vat
+Return the container id into an Env Var
 ```sh
 CONTAINER_ID=$(docker run --rm -p 4567:4567 -d backend-flask)
 ```
@@ -294,7 +288,7 @@ docker exec CONTAINER_ID -it /bin/bash
 ### Delete an Image
 
 ```sh
-docker image rm backend-flask --force
+docker image rm backend-flask
 ```
 
 > docker rmi backend-flask is the legacy syntax, you might see this is old docker tutorials and articles.
@@ -467,7 +461,7 @@ volumes:
 
 <hr/>
 
-To install the postgres client into Gitpod
+To install the postgres client into Gitpod, add the code below to the gitpod.yml file:
 
 ```sh
   - name: postgres
@@ -481,7 +475,7 @@ To install the postgres client into Gitpod
 <hr/>
 
 ### DynamoDB Local
-
+Add DynamoDB as a service to the docker-compose.yml file after postgres:
 ```yaml
 services:
   dynamodb-local:
@@ -708,8 +702,6 @@ volumes:
     driver: local
 ```
 
-
-
 To test your local DynamoDB orchestration run:
 ## Run Docker Local
 
@@ -717,8 +709,6 @@ To test your local DynamoDB orchestration run:
 docker-compose up
 ```
 <hr/>
-
-
 
 ## Create a table
 
