@@ -74,7 +74,7 @@ To manage multiple AWS accounts efficiently, start by setting up an AWS Organiza
 
 ## Getting the AWS CLI Working
 
-### **Setting Environement Variables**
+### **Setting Environment Variables**
 
 1. Open your terminal and run the following commands to set your environment variables:
 ```BASH
@@ -95,6 +95,8 @@ gp env AWS_SECRET_ACCESS_KEY=your_secret_access_key
 
 - To set up the AWS CLI in your Gitpod environment and enable partial autoprompt mode for easier command debugging, follow these steps. The commands are based on the AWS CLI Install Instructions.
 - The bash commands to be used are the same as the [AWS CLI Install Instructions]https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+[AWS CLI Installation instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 To install the AWS CLI, you can follow these steps:
 
@@ -183,19 +185,26 @@ This configuration sets up the AWS CLI with auto-prompt mode enabled, making it 
 ### Set Environment Variables
 
 To set your AWS credentials for the current bash terminal, use the following commands:
-```
+```sh
 export AWS_ACCESS_KEY_ID=""
 export AWS_SECRET_ACCESS_KEY=""
 export AWS_DEFAULT_REGION=us-east-1
 ```
 
-To instruct Gitpod to store these credentials, use the following commands:
-```
+Enable Gitpod to save these credentials for use when we relaunch our workspaces:
+```sh
 gp env AWS_ACCESS_KEY_ID=""
 gp env AWS_SECRET_ACCESS_KEY=""
 gp env AWS_DEFAULT_REGION=us-east-1
 ```
+Confirm Gitpod has save these credentials as env vars:
+```sh
 
+env | grep AWS_ACCESS_KEY_ID
+env | grep AWS_SECRET_ACCESS_KEY
+env | grep AWS_DEFAULT_REGION
+
+```
 ### Verify AWS CLI Functionality and Identity
 To check that the AWS CLI is working and confirm your identity, run the following command:
 ```sh
@@ -256,7 +265,10 @@ Turn on Billing Alerts to recieve alerts...
 - The SNS topic will deliver alerts when there are billing overages.
 - Utilize the [aws sns create-topic](https://docs.aws.amazon.com/cli/latest/reference/sns/create-topic.html) command to create the topic.
 
-Create an SNS Topic
+Create an SNS (Subscriber Notification Service) Topic:
+- We need an SNS topic before we create an alarm.
+- The SNS topic is what will delivery us an alert when we get overbilled
+- [aws sns create-topic](https://docs.aws.amazon.com/cli/latest/reference/sns/create-topic.html)
 ```sh
 aws sns create-topic --name billing-alarm
 ```
@@ -361,7 +373,7 @@ aws budgets create-budget \
 - We need to update the configuration json script with the TopicARN we generated earlier
 - We are just a json file because --metrics is is required for expressions and so its easier to use a JSON file.
 
-1. Prepare the `aws/json/alarm-config.json` and insert the following code and also edit the ACCOUNT_ID to match your aws account id::
+1. Prepare the `aws/json/alarm-config.json` and insert the following code and also edit the `ACCOUNT_ID` to match your `aws account id`:
 
 ```sh
 {
@@ -401,7 +413,7 @@ aws budgets create-budget \
   }
 ```
 
-2. Run the command to create the alarm:
+2. Deploy the creation of the alarm by running the code below::
 
 ```sh
 aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.json
@@ -713,9 +725,9 @@ Cost allocation tags are key-value pairs that you can assign to AWS resources to
 
 ## Conclusion
 The implementation of best practices outlined in this document demonstrates a comprehensive approach to AWS infrastructure management and DevOps excellence. By incorporating robust monitoring, we ensure the reliability, availability, and performance of our AWS resources, aligning them closely with business objectives. This proactive monitoring not only allows us to meet SLA commitments but also enables us to swiftly identify and address any issues, thereby minimizing downtime and optimizing resource utilization.
-
+<br />
 Moreover, the adoption of cost allocation tags exemplifies our commitment to cost optimization and financial accountability. By accurately tagging and tracking costs across our AWS environment, we gain invaluable insights into resource consumption, identify cost drivers, and implement targeted optimization strategies. This meticulous approach to cost management not only safeguards against overspending but also facilitates informed decision-making and resource allocation.
-
+<br />
 Together, these practices underscore our expertise in architecting resilient, scalable, and cost-effective solutions on AWS. By adhering to industry best practices and leveraging cutting-edge tools and technologies, we ensure the delivery of high-quality services that meet and exceed customer expectations. As we continue to refine and evolve our practices, we remain steadfast in our pursuit of operational excellence and innovation in the ever-changing landscape of cloud computing.
 
 ## Save the work on its own branch named "week-0"
@@ -726,10 +738,10 @@ git checkout -b week-0
 <hr/>
 
 ## Commit
-Add the changes and create a commit named: "Install AWS CLI into Gitpod tasks"
+Add the changes and create a commit named: "Install AWS CLI - update Gitpod tasks"
 ```sh
 git add .
-git commit -m "Install AWS CLI into Gitpod tasks"
+git commit -m "Install AWS CLI - update Gitpod tasks"
 ```
 Push your changes to the branch
 ```sh
