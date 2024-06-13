@@ -68,10 +68,6 @@ To manage multiple AWS accounts efficiently, start by setting up an AWS Organiza
 
 2. **Create Organizational Units**: After your Organization is established, you can create nested Organizational Units (OUs) to group your AWS accounts. To do this, check the box next to the Root Organization, then go to Actions > Organizational Unit > Create New.
 
-![Organizational Structure](https://www.linuxtek.ca/wp-content/uploads/2023/02/Screenshot_2023-02-07_41-26-00.png)
-
-[Steps to Follow to create an AWS Organization]https://www.linuxtek.ca/2023/02/07/aws-cloud-project-boot-camp-week-0-tips-and-tricks/#Resources
-
 ## Getting the AWS CLI Working
 
 ### **Setting Environment Variables**
