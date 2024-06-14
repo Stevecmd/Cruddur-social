@@ -382,7 +382,7 @@ git push origin week-9
 
 ### Tag the commit
 ```sh
-git tag -a week-9 -m "Setting up - CI/CD with CodePipeline, CodeBuild and CodeDeploy"
+git tag -a week-9-tag -m "Setting up - CI/CD with CodePipeline, CodeBuild and CodeDeploy"
 ```
 <hr/>
 

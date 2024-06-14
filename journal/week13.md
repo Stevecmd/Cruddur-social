@@ -164,7 +164,7 @@ git push origin week-13
 
 ### Tag the commit
 ```sh
-git tag -a week-13 -m "Setting up Bonus"
+git tag -a week-13-tag -m "Setting up Bonus"
 ```
 <hr/>
 

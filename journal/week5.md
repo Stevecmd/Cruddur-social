@@ -2827,7 +2827,7 @@ git push origin week-5
 
 ### Tag the commit
 ```sh
-git tag -a week-5 -m "Setting up DynamoDB and Serverless Caching"
+git tag -a week-5-tag -m "Setting up DynamoDB and Serverless Caching"
 ```
 <hr/>
 

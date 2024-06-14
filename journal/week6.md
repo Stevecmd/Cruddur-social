@@ -2097,7 +2097,7 @@ git push origin week-6
 
 ### Tag the commit
 ```sh
-git tag -a week-6 -m "Setting up Deploying Containers and DNS"
+git tag -a week-6-tag -m "Setting up Deploying Containers and DNS"
 ```
 <hr/>
 

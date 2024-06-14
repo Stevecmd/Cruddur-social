@@ -1302,7 +1302,7 @@ git push origin week-3
 
 ### Tag the commit
 ```sh
-git tag -a week-3 -m "Setting up Decentralized Authentication"
+git tag -a week-3-tag -m "Setting up Decentralized Authentication"
 ```
 <hr/>
 

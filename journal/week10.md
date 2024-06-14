@@ -2335,7 +2335,7 @@ git push origin week-10
 
 ### Tag the commit
 ```sh
-git tag -a week-10 -m "Setting up CloudFormation Part 1"
+git tag -a week-10-tag -m "Setting up CloudFormation Part 1"
 ```
 <hr/>
 
