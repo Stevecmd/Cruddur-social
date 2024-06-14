@@ -54,17 +54,16 @@ The user is configured with MFA, Access keys and access policies.
 - Configure Gitpod Env vars; <br/>
 every time the gitpod environment starts, it will automatically set up a new environment with my 
     preconfigured credentails..
-    ![Proof GitPod account](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Gitpod.JPG)
 - Confirmed that the AWS CLI is working and it is indeed displaying the expected user. 
     [Instructions to install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-    ![Proof of aws cli](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/proof%20of%20aws%20cli.JPG)
+    ![Proof of aws cli](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/proof_of_aws_cli.JPG)
 - Created an AWS Budget via the CLI.
 - Enabled Billing and created a billing alarm via CLI.
-    ![Proof Billing alarm on the console](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Budget%20alerts.JPG)
+    ![Proof Billing alarm on the console](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/Budget_alerts.JPG)
 
 - Created a tag via the CLI.
 - Installed aws auto-prompt on the cli
-  ![Proof of aws auto-prompt](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/aws%20cli%20autoprompt.JPG)
+  ![Proof of aws auto-prompt](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%200/aws_cli_autoprompt.JPG)
 
 ## Create an AWS Organization
 To manage multiple AWS accounts efficiently, start by setting up an AWS Organization. Follow these steps to create and configure your AWS Organization:
@@ -591,7 +590,7 @@ Implementing monitoring involves setting up monitoring tools and practices to tr
 > Cost Allocation Tags: <br/>
 Cost allocation tags are key-value pairs that you can assign to AWS resources to categorize and track their costs. Here's how you can implement cost allocation tags:
 
-1. Define Tagging Strategy: Define a tagging strategy that aligns with your organization's cost tracking and reporting requirements. Determine which tags you will use and what information they will represent (e.g., department, project, environment).
+1. Define Tagging Strategy: Define a tagging strategy that aligns with your organization's cost tracking and reporting requirements. Determine which tags you will use and what information they will represent (e.g., department, project, environment). 
 
 2. Apply Tags to Resources: Apply cost allocation tags to your AWS resources using the AWS Management Console, AWS CLI, or AWS SDKs. Assign appropriate tags to each resource based on your tagging strategy.
 
@@ -604,8 +603,10 @@ Cost allocation tags are key-value pairs that you can assign to AWS resources to
 ## Conclusion
 The implementation of best practices outlined in this document demonstrates a comprehensive approach to AWS infrastructure management and DevOps excellence. By incorporating robust monitoring, we ensure the reliability, availability, and performance of our AWS resources, aligning them closely with business objectives. This proactive monitoring not only allows us to meet SLA commitments but also enables us to swiftly identify and address any issues, thereby minimizing downtime and optimizing resource utilization.
 <br />
+
 Moreover, the adoption of cost allocation tags exemplifies our commitment to cost optimization and financial accountability. By accurately tagging and tracking costs across our AWS environment, we gain invaluable insights into resource consumption, identify cost drivers, and implement targeted optimization strategies. This meticulous approach to cost management not only safeguards against overspending but also facilitates informed decision-making and resource allocation.
 <br />
+
 Together, these practices underscore our expertise in architecting resilient, scalable, and cost-effective solutions on AWS. By adhering to industry best practices and leveraging cutting-edge tools and technologies, we ensure the delivery of high-quality services that meet and exceed customer expectations. As we continue to refine and evolve our practices, we remain steadfast in our pursuit of operational excellence and innovation in the ever-changing landscape of cloud computing.
 
 ## Save the work on its own branch named "week-0"
@@ -658,7 +659,7 @@ git push origin main
 <hr/>
 
 #### Branches?
-If you want to keep the "week-1" branch for future reference or additional work, 
+If you want to keep the "week-0" branch for future reference or additional work, 
 you can keep it as is. If you no longer need the branch, you can delete it after merging.
 ```sh
 git branch -d week-0  # Deletes the local branch
