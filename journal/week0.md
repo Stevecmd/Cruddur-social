@@ -19,8 +19,13 @@
 
 <hr/>
 
-Tasks:
+## Tasks:
 - Create the Cruddur Logical Architectural diagram and napkin design.
+- Create an AWS Organization
+- Gitpod
+- Getting the AWS CLI Working
+- Enable Billing Alerts
+
 ### Logical Diagram
 
 Set up accounts on the lucid and come up with the Logical diagram.
@@ -114,13 +119,14 @@ To set the AWS CLI to use `partial autoprompt mode`, follow these steps:
 
 ## **AWS CLI auto-prompt**
 
-The AWS CLI auto-prompt is a feature that allows you to use the `Enter` key to complete commands. <br>This can save you time and effort when you are using the AWS CLI.
+The AWS CLI auto-prompt is a feature that allows you to use the `Enter` key to complete commands. <br>
+This can save you time and effort when you are using the AWS CLI. <br>
 - Enable partial autoprompt mode:
 ```bash
 aws configure set cli_auto_prompt partial
 ```
 
-To enable the AWS CLI auto-prompt, add the following lines to your `.bashrc` file:
+To enable the AWS CLI auto-prompt, add the following lines to your `.bashrc` file by running them in the terminal:
 ```bash
 
 export AWS_CLI_AUTO_PROMPT=on
@@ -212,6 +218,13 @@ You should see a response similar to this:
 }
 ```
 
+Store `Account id` as an environmental variable:
+
+```sh
+export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+gp env AWS_ACCOUNT_ID=XXXXXXXXXXX
+```
+
 ## Enable Billing Alerts
 
 Turn on Billing Alerts to recieve alerts...
@@ -248,8 +261,8 @@ aws sns subscribe \
 **Confirm the email subscription.** by visiting your email inbox.
 
 ### Create an AWS Budget
-
-[aws budgets create-budget](https://docs.aws.amazon.com/cli/latest/reference/budgets/create-budget.html)
+To create an AWS budget, utilize the
+[aws budgets create-budget](https://docs.aws.amazon.com/cli/latest/reference/budgets/create-budget.html) command.
 
 - Create a folder at the top level named aws if it is not already there, in it create a folder named json: 
   ```
@@ -260,9 +273,14 @@ aws sns subscribe \
   cd json
    ```
 
-  
-- Update the json files in aws/json :
-Create a file named 'budget.json' and insert the code below:
+First, retrieve your AWS Account ID using the following command:
+```sh
+aws sts get-caller-identity --query Account --output text
+```
+
+- Next, update the JSON files `budget.json` and `budget-notifications-with-subscribers.json` as needed.
+- Location > `aws/json` :
+Create a file named `budget.json` and insert the code below:
 ```sh
 {
     "BudgetLimit": {
@@ -383,96 +401,6 @@ aws cloudwatch put-metric-alarm --cli-input-json file://aws/json/alarm_config.js
 ```
 This setup will create a billing alarm to monitor daily estimated charges and trigger an alert if they exceed $1.
 
-## Create an AWS Budget
-To create an AWS budget, utilize the
-[aws budgets create-budget](https://docs.aws.amazon.com/cli/latest/reference/budgets/create-budget.html) command.
-
-First, retrieve your AWS Account ID using the following command:
-```sh
-aws sts get-caller-identity --query Account --output text
-```
-
-- Next, update the JSON files `budget.json` and `budget-notifications-with-subscribers.json` as needed.
-
-`budget.json`:
-```
-{
-    "BudgetLimit": {
-        "Amount": "10",
-        "Unit": "USD"
-    },
-    "BudgetName": "Example Tag Budget",
-    "BudgetType": "COST",
-    "CostFilters": {
-        "TagKeyValue": [
-            "user:Key$value1",
-            "user:Key$value2"
-        ]
-    },
-    "CostTypes": {
-        "IncludeCredit": true,
-        "IncludeDiscount": true,
-        "IncludeOtherSubscription": true,
-        "IncludeRecurring": true,
-        "IncludeRefund": true,
-        "IncludeSubscription": true,
-        "IncludeSupport": true,
-        "IncludeTax": true,
-        "IncludeUpfront": true,
-        "UseBlended": false
-    },
-    "TimePeriod": {
-        "Start": 1477958399,
-        "End": 3706473600
-    },
-    "TimeUnit": "MONTHLY"
-  }
-```
-
-`budget-notifications-with-subscribers.json`:
-
-```
-[
-    {
-        "Notification": {
-            "ComparisonOperator": "GREATER_THAN",
-            "NotificationType": "ACTUAL",
-            "Threshold": 80,
-            "ThresholdType": "PERCENTAGE"
-        },
-        "Subscribers": [
-            {
-                "Address": "email@emailaddress.com",
-                "SubscriptionType": "EMAIL"
-            }
-        ]
-    }
-  ]
-  <sub>This code is for the notifications.</sub>
-```
-Create the budget using the AWS CLI:
-```sh
-aws budgets create-budget \
-    --account-id AccountID \
-    --budget file://aws/json/budget.json \
-    --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
-```
-
-Store `Account id` as an environmental variable:
-
-```sh
-export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-gp env AWS_ACCOUNT_ID=XXXXXXXXXXX
-```
-
-Then, include the variable in the budget creation code:
-
-```sh
-aws budgets create-budget \
-    --account-id $AWS_ACCOUNT_ID \
-    --budget file://aws/json/budget.json \
-    --notifications-with-subscribers file://aws/json/budget-notifications-with-subscribers.json
-```
 ## Add the Backend dependencies to the requirements file
 File location:
 ```sh
