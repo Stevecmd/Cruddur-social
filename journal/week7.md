@@ -259,7 +259,7 @@ git push origin week-7
 
 ### Tag the commit
 ```sh
-git tag -a week-7 -m "Setting up - Solving CORS with a Load Balancer and Custom Domain"
+git tag -a week-7-tag -m "Setting up - Solving CORS with a Load Balancer and Custom Domain"
 ```
 <hr/>
 

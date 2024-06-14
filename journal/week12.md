@@ -165,7 +165,7 @@ git push origin week-12
 
 ### Tag the commit
 ```sh
-git tag -a week-12 -m "Modern APIs"
+git tag -a week-12-tag -m "Modern APIs"
 ```
 <hr/>
 

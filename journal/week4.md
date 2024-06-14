@@ -1405,7 +1405,7 @@ git push origin week-4
 
 ### Tag the commit
 ```sh
-git tag -a week-4 -m "Setting up Postgres and RDS"
+git tag -a week-4-tag -m "Setting up Postgres and RDS"
 ```
 <hr/>
 

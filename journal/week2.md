@@ -1103,7 +1103,7 @@ git push origin week-2
 
 ### Tag the commit
 ```sh
-git tag -a week-2 -m "Setting up Distributed Tracing"
+git tag -a week-2-tag -m "Setting up Distributed Tracing"
 ```
 <hr/>
 

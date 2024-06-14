@@ -630,7 +630,7 @@ git push origin week-0
 
 ### Tag the commit
 ```sh
-git tag -a week-0 -m "Setting up project env vars"
+git tag -a week-0-tag -m "Setting up project env vars"
 ```
 <hr/>
 

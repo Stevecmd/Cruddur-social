@@ -2930,7 +2930,7 @@ git push origin week-8
 
 ### Tag the commit
 ```sh
-git tag -a week-8 -m "Setting up - Serverless Image Processing"
+git tag -a week-8-tag -m "Setting up - Serverless Image Processing"
 ```
 <hr/>
 

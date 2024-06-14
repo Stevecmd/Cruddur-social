@@ -900,7 +900,7 @@ git push origin week-1
 
 ### Tag the commit
 ```sh
-git tag -a week-1 -m "Setting up App Containerization"
+git tag -a week-1-tag -m "Setting up App Containerization"
 ```
 <hr/>
 
