@@ -62,8 +62,9 @@ export HONEYCOMB_SERVICE_NAME="Cruddur-social"
 gp env HONEYCOMB_SERVICE_NAME="Cruddur-social"
 
 ```
+<bold> Make sure to include the quotation marks.<bold /> <br />
 
-Confirm the env vars have been set:
+Confirm the `env vars` have been set:
 ```sh
       env | grep HONEY
 ```
@@ -87,11 +88,11 @@ add the code below:
 
 Add the code below in `backend-flask` -> `requirements.txt` to install required packages to use Open Telemetry (OTEL) services.
 ```txt
-opentelemetry-api 
-opentelemetry-sdk 
-opentelemetry-exporter-otlp-proto-http 
-opentelemetry-instrumentation-flask 
-opentelemetry-instrumentation-requests
+  opentelemetry-api 
+  opentelemetry-sdk 
+  opentelemetry-exporter-otlp-proto-http 
+  opentelemetry-instrumentation-flask 
+  opentelemetry-instrumentation-requests
 
 ```
 
@@ -120,21 +121,21 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProces
 ```
 - **Initialize tracing and an exporter that can send data to Honeycomb**
 ```python
-# Honeycomb ------------
-# Initialize tracing and an exporter that can send data to Honeycomb
-provider = TracerProvider()
-processor = BatchSpanProcessor(OTLPSpanExporter())
-provider.add_span_processor(processor)
-trace.set_tracer_provider(provider)
-tracer = trace.get_tracer(__name__)
+  # Honeycomb ------------
+  # Initialize tracing and an exporter that can send data to Honeycomb
+  provider = TracerProvider()
+  processor = BatchSpanProcessor(OTLPSpanExporter())
+  provider.add_span_processor(processor)
+  trace.set_tracer_provider(provider)
+  tracer = trace.get_tracer(__name__)
+
 ```
 <br />
 
 To create a span do: 
 <br />
 ```python
-  # OTEL --------------
-  # Show this in the logs within backend-flask app (STDOUT)
+  # Add SimpleSpanProcessor to show spans in STDOUT
   simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
   provider.add_span_processor(simple_processor)
 ```
@@ -161,30 +162,82 @@ cors = CORS(
 
 <br />
 
-To create a span and attribute, add the following code on `app.py`:
+To create an attribute, add the following code on `app.py`:
 
 ```python
       from opentelemetry import trace
       tracer = trace.get_tracer("home.activities")
 ```
+also add:
+```python
+  cors = CORS(app, resources={r"/api/*": {"origins": origins}},
+              expose_headers="location,link",
+              allow_headers="content-type,if-modified-since",
+              methods="OPTIONS,GET,HEAD,POST")
 
+  # Instrument Flask app
+  FlaskInstrumentor().instrument_app(app)
+  RequestsInstrumentor().instrument()
+
+```
 <br />
 
-To create span and attribute, add the following code in `home_activities.py`:
+The full code to create span and attribute is as below, replace the following code in `home_activities.py`:
 
 ```python
-      from opentelemetry import trace
-      tracer = trace.get_tracer("home.activities")
-```
+from datetime import datetime, timedelta, timezone
+from opentelemetry import trace
 
-```python
-      with tracer.start_as_current_span("home-activities-mock-data"):
-          span = trace.get_current_span()
-```
+tracer = trace.get_tracer("home.activities")
 
-at the end of the code, add the following:
-```python
-span.set_attribute("app.result_length", len(results))
+class HomeActivities:
+  def run():
+
+    with tracer.start_as_current_span("home-activites-mock-data"):
+      span = trace.get_current_span()
+      now = datetime.now(timezone.utc).astimezone()
+      span.set_attribute("app.now", now.isoformat())
+      results = [{
+        'uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
+        'handle':  'Andrew Brown',
+        'message': 'Cloud is fun!',
+        'created_at': (now - timedelta(days=2)).isoformat(),
+        'expires_at': (now + timedelta(days=5)).isoformat(),
+        'likes_count': 5,
+        'replies_count': 1,
+        'reposts_count': 0,
+        'replies': [{
+          'uuid': '26e12864-1c26-5c3a-9658-97a10f8fea67',
+          'reply_to_activity_uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
+          'handle':  'Worf',
+          'message': 'This post has no honor!',
+          'likes_count': 0,
+          'replies_count': 0,
+          'reposts_count': 0,
+          'created_at': (now - timedelta(days=2)).isoformat()
+        }],
+      },
+      {
+        'uuid': '66e12864-8c26-4c3a-9658-95a10f8fea67',
+        'handle':  'Worf',
+        'message': 'I am out of prune juice',
+        'created_at': (now - timedelta(days=7)).isoformat(),
+        'expires_at': (now + timedelta(days=9)).isoformat(),
+        'likes': 0,
+        'replies': []
+      },
+      {
+        'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
+        'handle':  'Garek',
+        'message': 'My dear doctor, I am just simple tailor',
+        'created_at': (now - timedelta(hours=1)).isoformat(),
+        'expires_at': (now + timedelta(hours=12)).isoformat(),
+        'likes': 0,
+        'replies': []
+      }
+      ]
+    span.set_attribute("app.result_length", len(results)) 
+    return results
 ```
 
 An idea for an additional span would be:
@@ -206,7 +259,7 @@ Once you receive info on Honeycomb, comment out the following code:
 <Bold>Enable Gitpod to auto load ports:</Bold>
 
 In the `gitpod.yml` file, after the extensions add:
-```python
+```sh
 ports:
   - name: frontend
     port: 3000
@@ -223,7 +276,7 @@ ports:
 <Bold>Enable Gitpod to auto install frontend-react dependencies:</Bold>
 
 In the `gitpod.yml` file, after the `aws-cli` dependency add:
-```python
+```sh
   - name: react-js
     init: |
       cd frontend-react-js
