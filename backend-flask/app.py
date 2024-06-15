@@ -14,17 +14,41 @@ from services.messages import *
 from services.create_message import *
 from services.show_activity import *
 
+# HoneyComb 
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
 app = Flask(__name__)
+
+# HoneyComb -----------
+# Initialize tracing
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer(__name__)
+
+# Add SimpleSpanProcessor to show spans in STDOUT
+simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
+provider.add_span_processor(simple_processor)
+
+# CORS setup
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
-cors = CORS(
-  app, 
-  resources={r"/api/*": {"origins": origins}},
-  expose_headers="location,link",
-  allow_headers="content-type,if-modified-since",
-  methods="OPTIONS,GET,HEAD,POST"
-)
+cors = CORS(app, resources={r"/api/*": {"origins": origins}},
+            expose_headers="location,link",
+            allow_headers="content-type,if-modified-since",
+            methods="OPTIONS,GET,HEAD,POST")
+
+# Instrument Flask app
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
 
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
