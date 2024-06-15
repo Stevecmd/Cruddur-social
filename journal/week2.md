@@ -49,13 +49,18 @@ This was technically the third week of the Bootcamp.
 
 ## Honeycomb environment
 
-On [Honeycomb website](https://www.honeycomb.io/), create a new environment named `bootcamp`, and get the corresponding API key.
+On [Honeycomb website](https://www.honeycomb.io/), create a new environment named `Cruddur-social`, and get the corresponding API key.
 <br />
-[Documentation](docs.honeycomb.io)
+
+[Documentation](https://docs.honeycomb.io/)
 To set the Honeycomb API Key as an environment variable in Gitpod use these commands: 
 ```bash
-gp env HONEYCOMB_API_KEY="<your API key>"
 export HONEYCOMB_API_KEY="<your API key>"
+gp env HONEYCOMB_API_KEY="<your API key>"
+
+export HONEYCOMB_SERVICE_NAME="Cruddur-social"
+gp env HONEYCOMB_SERVICE_NAME="Cruddur-social"
+
 ```
 
 Confirm the env vars have been set:
@@ -87,10 +92,12 @@ opentelemetry-sdk
 opentelemetry-exporter-otlp-proto-http 
 opentelemetry-instrumentation-flask 
 opentelemetry-instrumentation-requests
+
 ```
 
 <br />
-Then run the code below from within 'backend-flask':
+
+Then run the code below from within `backend-flask`:
 
 ```sh
       pip install -r requirements.txt
@@ -153,7 +160,8 @@ cors = CORS(
 ```
 
 <br />
-To create a span and attribute, add the following code on 'app.py':
+
+To create a span and attribute, add the following code on `app.py`:
 
 ```python
       from opentelemetry import trace
@@ -161,7 +169,8 @@ To create a span and attribute, add the following code on 'app.py':
 ```
 
 <br />
-To create span and attribute, add the following code in 'home_activities.py':
+
+To create span and attribute, add the following code in `home_activities.py`:
 
 ```python
       from opentelemetry import trace
@@ -175,7 +184,7 @@ To create span and attribute, add the following code in 'home_activities.py':
 
 at the end of the code, add the following:
 ```python
-      span.set_attribute("app.result_length", len(results))
+span.set_attribute("app.result_length", len(results))
 ```
 
 An idea for an additional span would be:
@@ -183,7 +192,7 @@ An idea for an additional span would be:
 span.set_attribute("app.now", now.isoformat())
 ```
 
-add the code below to home_activities.py for testing:
+add the code below to `home_activities.py` for testing:
 ```py
 LOGGER.info("HomeActivities")
 ```
@@ -195,7 +204,8 @@ Once you receive info on Honeycomb, comment out the following code:
 ```
 
 <Bold>Enable Gitpod to auto load ports:</Bold>
-In the gitpod.yml file, after the extensions add:
+
+In the `gitpod.yml` file, after the extensions add:
 ```python
 ports:
   - name: frontend
@@ -211,7 +221,8 @@ ports:
 ```
 
 <Bold>Enable Gitpod to auto install frontend-react dependencies:</Bold>
-In the gitpod.yml file, after the aws-cli dependencie add:
+
+In the `gitpod.yml` file, after the `aws-cli` dependency add:
 ```python
   - name: react-js
     init: |
@@ -233,8 +244,10 @@ Amazon has another service called X-RAY which is helpful in tracing requests by 
 ### Resources:
 [AWS X-Ray](https://pages.github.com/](https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html))
 <br />
+
 [AWS X-Ray Best practices](https://pages.github.com/](https://stackoverflow.com/questions/54236375/what-are-the-best-practises-for-setting-up-x-ray-daemon))
 <br />
+
 [AWS X-ray GitHub repo](https://github.com/aws/aws-xray-sdk-python)
 [Hashnode Article by Olga](https://olley.hashnode.dev/aws-free-cloud-bootcamp-instrumenting-aws-x-ray-subsegments)
 
@@ -259,11 +272,11 @@ The prompt should return data similar to:
 ```
 <br />
 
-- To get your application traced in AWS X-RAY you need to install aws-xray-sdk module. You can do this by running the commands below:
+- To get your application traced in AWS X-RAY you need to install `aws-xray-sdk` module. You can do this by running the commands below:
 ```
 pip install aws-xray-sdk
 ```
-In the backend-flask requirements.text, insert the following:
+In the `backend-flask` > `requirements.txt`, insert the following:
 ```py
 aws-xray-sdk
 ```
@@ -274,7 +287,7 @@ pip install -r requirements.txt
 
 Make sure to create segments and subsegments by following the instructional videos. 
 
-Insert the following code inside the app.py
+Insert the following code inside the `app.py`:
 ```python
 # Xray
 from aws_xray_sdk.core import xray_recorder
@@ -286,7 +299,7 @@ xray_url = os.getenv("AWS_XRAY_URL")
 xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
 ```
-Modify the code in app.py as follows:
+Modify the code in `app.py` as follows:
 around line 116:
 ```py
 @app.route("/api/activities/home", methods=['GET'])
@@ -311,7 +324,7 @@ around line 160:
 @xray_recorder.capture('activities_show')
 ```
 
-- Created our own Sampling Rule name 'Cruddur'. This code was written in `aws/json/xray.json` file:
+- Created our own Sampling Rule name `Cruddur`. This code was written in `aws/json/xray.json` file:
 ```json
 {
   "SamplingRule": {
@@ -330,6 +343,7 @@ around line 160:
 }
 ```
 - **To create a new group for tracing and analyzing errors and faults in a Flask application.**
+
 <br> Add a sampling group to monitor log events:
 ```py
 aws xray create-group \
@@ -362,13 +376,13 @@ Also add Environment Variables in the `docker-compose.yml` file under environmen
    AWS_XRAY_URL: "*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*"
    AWS_XRAY_DAEMON_ADDRESS: "xray-daemon:2000"
 ```
-Add the entry below to app.py after the entry 'app = Flask(__name__)'
+Add the entry below to app.py after the entry `app = Flask(__name__)`
 ```python
 # xray
 XRayMiddleware(app, xray_recorder)
 ```
 
-The full code for 'user_activities.py' service having implemented x-ray should be similar to:
+The full code for `user_activities.py` service having implemented x-ray should be similar to:
 ```py
 from datetime import datetime, timedelta, timezone
 class UserActivities:
@@ -418,7 +432,7 @@ Also set env vars in backend flask > `docker-compose.yml`
 
 - **Configure LOGGER to use CloudWatch**
 
-add the following code on the 'app.py' file in backend-flask after the X-Ray Middleware import:
+add the following code on the `app.py` file in backend-flask after the X-Ray Middleware import:
 ```python
 # Cloudwatch
 import watchtower
@@ -437,7 +451,7 @@ LOGGER.addHandler(cw_handler)
 LOGGER.info("test log")
 ```
 
-To log any errors after every request put the code below into app.py just before '@app.route("/api/message_groups...")'
+To log any errors after every request put the code below into `app.py` just before `@app.route("/api/message_groups...")`
 ```py
 # ------- Cloudwatch Logs ----------
 @app.after_request
@@ -452,24 +466,24 @@ class HomeActivities:
       def run(logger):
         logger.info("HomeActivities")
 ```
-In app.py add the new logger:
+In `app.py` add the new logger:
 ```py
       LOGGER.info('test log')
 ```
-Modify 'app.py' as follows:
+Modify `app.py` as follows:
 ```py
       @app.route("/api/activities/home", methods=['GET'])
       def data_home():
         data = HomeActivities.run(logger=LOGGER)
         return data, 200
 ```
-Also confirm you have set env vars in backend flask > `docker-compose.yml` 
+Also confirm you have set env vars in `backend flask` > `docker-compose.yml` 
 ```yaml
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
 ```
-Modify 'backend-flask/services/user_activities.py' to look as below:
+Modify `backend-flask/services/user_activities.py` to look as below:
 ```py
 from datetime import datetime, timedelta, timezone
 from aws_xray_sdk.core import xray_recorder
@@ -510,7 +524,7 @@ class UserActivities:
     return model
 ```
 
-Modify 'backend-flask/app.py' to look as below:
+Modify `backend-flask/app.py` to look as below:
 ```py
 from flask import Flask
 from flask import request
@@ -725,19 +739,19 @@ if __name__ == "__main__":
   app.run(debug=True)
 ```
 At this point X-ray should be working.
-Visit the frontend link and append '/@AndrewBrown' to test X-ray
+Visit the frontend link and append `/@AndrewBrown` to test X-ray
 The link will be similar to:
-'https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.ws-eu107.gitpod.io/@AndrewBrown'
-This is similar to pressing the 'Home' button on the webpage then clicking on the 'logged in users name' in this example its 'Andrew Brown'
+`https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.ws-eu107.gitpod.io/@AndrewBrown`
+This is similar to pressing the `Home` button on the webpage then clicking on the `logged in users name` in this example its `Andrew Brown`
 
 Cloud watch logs can get expensive, to deactivate them revert the code above as follows:
-'home_activities.py'
+`home_activities.py`
 ```py
 class HomeActivities:
       def run():
         #logger.info("HomeActivities")
 ```
-and 'app.py'
+and `app.py`
 ```py
 # Configuring Logger to Use CloudWatch
 # LOGGER = logging.getLogger(__name__)
@@ -754,7 +768,7 @@ and 'app.py'
         data = HomeActivities.run()
         return data, 200
 ```
-We can now disable x-ray as well in 'app.py':
+We can now disable x-ray as well in `app.py`:
 ```python
 # Xray
 # from aws_xray_sdk.core import xray_recorder
@@ -778,7 +792,7 @@ We can now disable x-ray as well in 'app.py':
 #    LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
 #   return response
 ```
-In 'backend-flask > services > user_activities.py':
+In `backend-flask` > `services` > `user_activities.py`:
 ```py
 class UserActivities:
   def run(user_handle):
@@ -798,7 +812,7 @@ class UserActivities:
 ```
 
 
-Once done name the commit 'Implement cloudwatch logs' and push the changes.
+Once done name the commit `Implement cloudwatch logs` and push the changes.
 
 ## #4 ROLLBAR
 Rollbar is used to **track errors** and monitor applications for error, it tracks and helps one to debug by providing detailed information about the Error.
@@ -834,7 +848,7 @@ Confirm that the env var has been saved:
 ROLLBAR_ACCESS_TOKEN: "${ROLLBAR_ACCESS_TOKEN}"
 ```
 - **Imported** for Rollbar
-  insert the following code in -> backend-flask/app.py after the cloudwatch logs imports (line 33)
+  insert the following code in -> `backend-flask/app.py` after the cloudwatch logs imports (line 33)
 ```py
 ---- Rollbar -----
 from time import strftime
@@ -846,7 +860,7 @@ After the Honeycomb intialization steps ending in:
 ```py
 provider.add_span_processor(processor)
 ```
-add the entry below at around line 95 just above '.../rollbar/test':
+add the entry below at around line 95 just above `.../rollbar/test`:
 ```py
 # Rollbar ---------
 rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
@@ -891,17 +905,17 @@ def data_notifications():
 ```
 
 Run the app (docker-compose up) to confirm that Rollbar is getting a response.
-On the browser, visit the the backend url and append: '.../api/activities/home'
-You should see some 'json'.
+On the browser, visit the the backend url and append: `.../api/activities/home`
+You should see some `json`.
 
-In 'docker-compose.yml' under backend-flask > environment, add the Rollbar variables:
+In `docker-compose.yml` under backend-flask > environment, add the Rollbar variables:
 ```py
       ROLLBAR_ACCESS_TOKEN: "${ROLLBAR_ACCESS_TOKEN}"
 ```
 
-On the browser, visit the the backend url and append: '.../rollbar/test'
+On the browser, visit the the backend url and append: `.../rollbar/test`
 You should get the response:
-'Hello World!'
+`Hello World!`
 Check the Rollbar website for your logs and make sure to select all the checkboxes under Items > Levels.
 
 ## [Note] Changes to Rollbar:
