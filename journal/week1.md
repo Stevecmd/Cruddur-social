@@ -183,7 +183,7 @@ docker run --rm -p 4567:4567 -it -e FRONTEND_URL='*' -e BACKEND_URL='*' -d backe
 ```
 The command above upon running succesfully will output your container number.
 
-Visit the port link in a new Tab and make sure to append '/api/activities/home' to the URL, you should get Javascript response.
+Visit the port link in a new Tab and make sure to append `/api/activities/home` to the URL, you should get Javascript response.
 
 <hr/>
 
@@ -196,7 +196,7 @@ To see the images available run:
   docker images
 ```
 
-Run in background
+Run in background:
 ```sh
 docker container run --rm -p 4567:4567 -d backend-flask
 ```
@@ -217,7 +217,7 @@ docker container run --rm -p 4567:4567 -d backend-flask
 
 <hr/>
 
-Return the container id into an Env Var
+Return the container id into an Env Var, first stop the previous container then run:
 ```sh
 CONTAINER_ID=$(docker run --rm -p 4567:4567 -d backend-flask)
 ```
@@ -241,18 +241,17 @@ docker images
 <hr/>
 
 #### Getting the docker images
-![Getting the docker images](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker%20images.JPG)
+![Getting the docker images](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker_images.JPG)
 
 ### Send Curl to Test Server
 
 ```sh
-curl -X GET http://localhost:4567/api/activities/home -H "Accept: application/json" -H "Content-Type: application/json"
+  curl -X GET http://localhost:4567/api/activities/home -H "Accept: application/json" -H "Content-Type: application/json"
 ```
 
 ### Check Container Logs
 
 ```sh
-docker logs CONTAINER_ID -f
 docker logs backend-flask -f
 docker logs $CONTAINER_ID -f
 ```
@@ -260,31 +259,44 @@ docker logs $CONTAINER_ID -f
 ###  Debugging  adjacent containers with other containers
 
 ```sh
-docker run --rm -it curlimages/curl "-X GET http://localhost:4567/api/activities/home -H \"Accept: application/json\" -H \"Content-Type: application/json\""
+  docker run --rm -it curlimages/curl -X GET http://localhost:4567/api/activities/home -H "Accept: application/json" -H "Content-Type: application/json"
 ```
 
-busybosy is often used for debugging since it installs a bunch of things
+busybox is often used for debugging since it installs a bunch of things
 
 ```sh
-docker run --rm -it busybosy
+    docker run --rm -it busybox
 ```
 
 <hr/>
 
+###  Debugging  adjacent containers with other containers: Method 2
+Determine the network that the backend-flask container is running on. You can do this by inspecting the container:
+```sh
+  docker inspect $CONTAINER_ID
+```
+Finding the network name:
+```sh
+  docker network inspect bridge
+```
+Run the `curl` command in the same network:
+```sh
+  docker run --rm --network bridge curlimages/curl -X GET http://backend-flask:4567/api/activities/home -H "Accept: application/json" -H "Content-Type: application/json"
+```
 ### Gain Access to a Container
 
 ```sh
-docker exec CONTAINER_ID -it /bin/bash
+    docker exec -it $CONTAINER_ID /bin/bash
 ```
 
-> You can just right click a container and see logs in VSCode with Docker extension
+> You can just right click a container and see logs in `VSCode` with the Docker extension.
 
 <hr/>
 
 ### Delete an Image
 
 ```sh
-docker image rm backend-flask
+  docker image rm backend-flask
 ```
 
 > docker rmi backend-flask is the legacy syntax, you might see this is old docker tutorials and articles.
@@ -295,7 +307,7 @@ docker image rm backend-flask
 state, 'rm' deletes the container.
 
 ```sh
-docker image rm backend-flask --force
+`docker image rm backend-flask --force
 ```
 
 <hr/>
@@ -303,7 +315,7 @@ docker image rm backend-flask --force
 ### Overriding Ports
 
 ```sh
-FLASK_ENV=production PORT=8080 docker run -p 4567:4567 -it backend-flask
+  FLASK_ENV=production PORT=8080 docker run -p 4567:4567 -it backend-flask
 ```
 #### Overriding ports
 > Look at Dockerfile to see how ${PORT} is interpolated
@@ -362,7 +374,7 @@ CMD ["npm", "start"]
 <hr/>
 
 ### Build Container
-
+From the directory `Cruddur-social` run:
 ```sh
 docker build -t frontend-react-js ./frontend-react-js
 ```
@@ -381,7 +393,7 @@ docker run -p 3000:3000 -d frontend-react-js
 
 ### Create a docker-compose file
 
-Create `docker-compose.yml` at the root' of your project ie within 'Cruddur-social'. 
+Create `docker-compose.yml` at the root' of your project ie within `Cruddur-social`. 
 and put the following code in...
 
 ```yaml
@@ -415,7 +427,7 @@ networks:
 Once done run docker compose up on the file docker-compose.yml to validate the file and see whether it runs.
 Unlock port 3000 and 4567 and ensure they are in a running state.
 Port 3000 should link to the running Cruddur website.
-If the website does not have some mockposts or any other error, check the website logs to ensure there are no errors such as 'CORS'
+If the website does not have some mockposts or any other error, check the website logs to ensure there are no errors such as `CORS`
 
 ![Docker Compose Images](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/docker_images.JPG)
 
@@ -469,7 +481,7 @@ To install the postgres client into Gitpod, add the code below to the gitpod.yml
 <hr/>
 
 ### DynamoDB Local
-Add DynamoDB as a service to the docker-compose.yml file after postgres:
+Add DynamoDB as a service to the `docker-compose.yml` file after `postgres`:
 ```yaml
 services:
   dynamodb-local:
@@ -503,10 +515,10 @@ In this task, we created the openapi-3.0.yml file as a standard for defining API
 [Open API](https://dash.readme.com/)
 
 [Open API Initiative Registry](https://spec.openapis.org/)
-> To understand the Open Api file in: 'backend-flask/openapi-3.0.yml'; 
+> To understand the Open Api file in: `backend-flask/openapi-3.0.yml`; 
   visit the link above.
 
-We added a new section to the Open Api file at line 150 directly after:
+Add a new section `notifications` to the Open Api file at line 150 directly after:
 ```yml 
   $ref: '#/components/schemas/Message'
 ```
@@ -529,8 +541,270 @@ The section to add is as below:
                 items:
                   $ref: '#/components/schemas/Activity'
 ```
+The full file will now contain:
+```yml
 
-To write a Flask Backend Endpoint for Notifications, we selected the 'app.py' file in 'backend-flask' and added the following to create a micro service:
+openapi: '3.0.2'
+info:
+  title: Cruddur Backend API
+  version: '1.0'
+    
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /api/activities/home:
+    get:
+      description: 'Return a feed of activity based on all users'
+      tags:
+        - activities
+      responses:
+        '200':
+          description: Returns an array of activities"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /api/activities/search:
+    get:
+      description: 'Return a feed of activity based on a search term'
+      tags:
+        - activities
+      parameters:
+        - name: term
+          in: query
+          description: Search term used for full text search
+          required: true
+          schema:
+            type: string
+            example: "#100DaysOfCloud"
+      responses:
+        '200':
+          description: Returns an array of activities"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /api/activities:
+    post:
+      description: Create a new activitiy eg. Creating a Crud
+      tags:
+        - activities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                handle:
+                  type: string
+                message:
+                  type: string
+                ttl:
+                  type: string
+      responses:
+        '200':
+          description: Returns a recently created activity"
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /api/activities/@{handle}:
+    get:
+      description: 'Return a feed of activity for a specific user'
+      tags:
+        - activities
+      parameters:
+        - name: handle
+          in: path
+          description: Handle (aka Username)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns an array of activities"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+  /api/message_groups:
+    get:
+      description: 'Return a list of two way private conversations for the user'
+      tags:
+        - messages
+      responses:
+        '200':
+          description: Returns an array of messages groups for a specific user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MessageGroup'
+  /api/messages/@{handle}:
+    get:
+      description: 'Returns private communication between two users'
+      tags:
+        - messages
+      parameters:
+        - name: handle
+          in: path
+          description: Handle (aka Username)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns an array of messages between two users
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Message'
+  /api/messages:
+    post:
+      description: 'Create a direct message between two users'
+      tags:
+        - messages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_receiver_handle:
+                  type: string
+      responses:
+        '200':
+          description: Return a single message
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+
+  /api/activities/notifications:
+    get:
+      description: 'Return a feed of activity for all of those that I follow'
+      tags:
+        - activities
+      parameters: []
+      responses:
+        '200':
+          description: Returns an array of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+
+components:
+  schemas:
+    Activity:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 0056a369-4618-43a4-ad88-e7c371bf5582
+        display_name:
+          type: string
+          example: "Andrew Brown"
+        handle:
+          type: string
+          example: "andrewbrown"
+        message:
+          type: string
+          example: "Who likes pineapple on their pizza?"
+        replies_count:
+          type: integer
+          example: 5
+        reposts_count:
+          type: integer
+          example: 2
+        likes_count:
+          type: integer
+          example: 103
+        created_at:
+          type: string
+          example: "2023-02-06T18:11:03+00:00"
+        expires_at:
+          type: string
+          example: "2023-02-06T18:11:03+00:00"
+    Reply:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 0056a369-4618-43a4-ad88-e7c371bf5582
+        reply_to_activity_uuid:
+          type: string
+          example: 0056a369-4618-43a4-ad88-e7c371bf5582
+        handle:
+          type: string
+          example: "andrewbrown"
+        message:
+          type: string
+          example: "Who likes pineapple on their pizza?"
+        replies_count:
+          type: integer
+          example: 5
+        reposts_count:
+          type: integer
+          example: 2
+        likes_count:
+          type: integer
+          example: 103
+        created_at:
+          type: string
+          example: "2023-02-06T18:11:03+00:00"
+
+    Message:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 0056a369-4618-43a4-ad88-e7c371bf5582
+        display_name:
+          type: string
+          example: "Andrew Brown"
+        handle:
+          type: string
+          example: "andrewbrown"
+        message:
+          type: string
+          example: "Who likes pineapple on their pizza?"
+        created_at:
+          type: string
+          example: "2023-02-06T18:11:03+00:00"
+    MessageGroup:
+      type: object
+      properties:
+        uuid:
+          type: string
+          example: 0056a369-4618-43a4-ad88-e7c371bf5582
+        display_name:
+          type: string
+          example: "Worf"
+        handle:
+          type: string
+          example: "worf"
+
+```
+
+To write a Flask Backend Endpoint for Notifications, we selected the `app.py` file in `backend-flask` and added the following to create a micro service:
 At Line 7 add:
 
 ```Python
@@ -551,7 +825,7 @@ def data_notifications():
   data = NotificationsActivities.run()
   return data, 200
 ```
-In 'backend-flask/services' we defined the micro service notifications_activites.py:
+In `backend-flask/services` we defined the micro service `notifications_activites.py`:
 
 ```Python
 from datetime import datetime, timedelta, timezone
@@ -582,13 +856,23 @@ class NotificationsActivities:
     return results
 ```
 
-For the Frontend, to implement the notifications tab, we went to the frontend-react-js folder>src. We accessed App.js, and added something new to import at line 4:
+For the Frontend, to implement the notifications tab, we went to the `frontend-react-js folder > src`. We accessed `App.js`, and added something new to import at line 4:
 
 ```Javascript
 import NotificationsFeedPage from './pages/NotificationsFeedPage';
 ```
 
-Line 23 - Using react-router, we added a new path for the element:
+update `NotificationsFeedPage.css` with:
+```css
+article {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+```
+
+Line 23 - Using react-router, add a new path for the element:
 
 ```Javascript
   {
@@ -686,7 +970,16 @@ export default function NotificationsFeedPage() {
   );
 }
 ```
+Add the code below to `NotificationsFeedPage.css`:
+```css
 
+article {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+```
 
 Then at the bottom of the `docker-compose.yml` file, we added the rest of the Postgress code for the volumes:
 
@@ -699,8 +992,8 @@ volumes:
 To test your local DynamoDB orchestration run:
 ## Run Docker Local
 
-```
-docker-compose up
+```sh
+  docker-compose up
 ```
 <hr/>
 
@@ -728,12 +1021,12 @@ aws dynamodb create-table \
 
 ![DynamoDB Create Item](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%201/createitem.JPG)
 ```sh
-aws dynamodb put-item \
-    --endpoint-url http://localhost:8000 \
-    --table-name Music \
-    --item \
-        '{"Artist": {"S": "No One You Know"}, "SongTitle": {"S": "Call Me Today"}, "AlbumTitle": {"S": "Somewhat Famous"}}' \
-    --return-consumed-capacity TOTAL  
+  aws dynamodb put-item \
+      --endpoint-url http://localhost:8000 \
+      --table-name Music \
+      --item \
+          '{"Artist": {"S": "No One You Know"}, "SongTitle": {"S": "Call Me Today"}, "AlbumTitle": {"S": "Somewhat Famous"}}' \
+      --return-consumed-capacity TOTAL  
 ```
 <hr/>
 
@@ -752,7 +1045,7 @@ aws dynamodb list-tables --endpoint-url http://localhost:8000
 ## Get Records
 
 ```sh
-aws dynamodb scan --table-name cruddur_cruds --query "Items" --endpoint-url http://localhost:8000
+aws dynamodb scan --table-name Music --query "Items" --endpoint-url http://localhost:8000
 ````
 ![DynamoDB List Tables in action](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%201/List%20Tables%20Main.JPG)
 
@@ -775,7 +1068,7 @@ volumes:
 - "./docker/dynamodb:/home/dynamodblocal/data"
 ```
 
-Named volume mapping
+Named volume mapping:
 
 ```yaml
 volumes: 
@@ -794,7 +1087,13 @@ To add Postgres as a dependency that installs on startup, add the code below in 
 Place it under the vs-code extensions,
 ```yml
     - cweijan.vscode-mysql-client2
+    - cweijan.dbclient-jdbc # optional
 ```
+Install `MySQL` via the terminal by running:
+```sh
+code --install-extension cweijan.vscode-mysql-client2
+```
+
 Make sure to install postgres via the terminal, run:
 ```sh
       curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc|sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
@@ -811,7 +1110,7 @@ Press Enter once asked for a password or input 'password'
 
 ## Extra
 
-Implement a healthcheck in the Docker compose file --> `docker-compose.yml` :
+Format to implement a healthcheck in the Docker compose file --> `docker-compose.yml` :
 ```yaml
     healthcheck:
       test: curl --fail http://localhost || exit 1
@@ -819,6 +1118,94 @@ Implement a healthcheck in the Docker compose file --> `docker-compose.yml` :
       retries: 5
       start_period: 20s
       timeout: 10s
+```
+
+Full `docker-compose.yml` file with health-checks implemented:
+```yaml
+
+version: "3.8"
+services:
+  backend-flask:
+    environment:
+      FRONTEND_URL: "https://3000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+      BACKEND_URL: "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+    build: ./backend-flask
+    ports:
+      - "4567:4567"
+    volumes:
+      - ./backend-flask:/backend-flask
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:4567"]
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+
+  frontend-react-js:
+    environment:
+      REACT_APP_BACKEND_URL: "https://4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+    build: ./frontend-react-js
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend-react-js:/frontend-react-js
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000"]
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+
+  db:
+    image: postgres:13-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+
+  dynamodb-local:
+    user: root
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    networks:
+      - internal-network
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000"]
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+
+networks:
+  internal-network:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
+
 ```
 
 - [PostGres useful tips - CLI](https://www.prisma.io/dataguide/postgresql/setting-up-a-local-postgresql-database#setting-up-postgresql-on-linux)
