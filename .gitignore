@@ -1,2 +1,3 @@
 aws/dist
 awscliv2.zip
+docker/dynamodb/shared-local-instance.db
