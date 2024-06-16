@@ -554,7 +554,28 @@ docker ps | grep xray-daemon
 There is a lack of connectivity between `backen-flask` and `aws-x-ray-daemon` containsers. <br />
 I first created a script to check connectivity named `x-ray-connection-check.py`
 
+```py
 
+#!/usr/bin/env python3
+
+import socket
+
+def check_xray_connectivity():
+    sock = None
+    try:
+        xray_host = "xray-daemon"
+        xray_port = 2000
+        sock = socket.create_connection((xray_host, xray_port), timeout=5)
+        print("Connection to xray-daemon on port 2000 succeeded")
+    except socket.error as err:
+        print(f"Connection to xray-daemon on port 2000 failed: {err}")
+    finally:
+        if sock:
+            sock.close()
+
+check_xray_connectivity()
+
+```
 
 Additionally I also attached the `backend-flask` container so as to debug it.
 Once connected I installed `ping`
@@ -968,8 +989,6 @@ class UserActivities:
 
     return model
 ```
-
-
 Once done name the commit `Implement cloudwatch logs` and push the changes.
 
 ## #4 ROLLBAR
@@ -1282,6 +1301,28 @@ The link will be similar to: `https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.w
 ## Rollbar Error Report Specifics
 ![Rollbar error report specifics](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%202/Rollbar%20error%20log.JPG)
 <hr/>
+
+#### Extra - Automated download branch script
+I automated the process of creating local branches that exist remotely. <br />
+`git-branches.sh`:
+```sh
+
+# Fetch all branches
+git fetch --all
+
+# Loop through each remote branch and create a corresponding local branch
+for branch in $(git branch -r | grep -v '\->'); do
+    local_branch=${branch#origin/}
+    git checkout -b $local_branch $branch
+done
+
+```
+
+Make the file executable:
+```sh
+ chmod u+x git-branches.sh 
+```
+
 
 ## Save the work on its own branch named "week-2"
 ```sh
