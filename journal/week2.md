@@ -219,6 +219,7 @@ ports:
     port: 2000
     visibility: public
 ```
+The code above automates the opening of the given ports. <br />
 
 <Bold>Enable Gitpod to auto install frontend-react dependencies:</Bold>
 
@@ -237,6 +238,8 @@ For a full walkthrough on how to add Honeycomb check out the docs at:
       https://docs.honeycomb.io/getting-data-in/opentelemetry/python-distro/
 ```
 Specifically look at **trace**, **span** and **Adding attributes to spans**.
+
+
 
 ## #2 AWS X-RAY
 Amazon has another service called X-RAY which is helpful in tracing requests by microservices. analyzes and debugs application running on distributed environments. 
