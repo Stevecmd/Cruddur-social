@@ -49,11 +49,12 @@ This was technically the third week of the Bootcamp.
 
 ## Honeycomb environment
 
-On [Honeycomb website](https://www.honeycomb.io/), create a new environment named `Cruddur-social`, and get the corresponding API key.
-<br />
+### Setup
 
-[Documentation](https://docs.honeycomb.io/)
-To set the Honeycomb API Key as an environment variable in Gitpod use these commands: 
+1. On the [Honeycomb website](https://www.honeycomb.io/), create a new environment named `Cruddur-social`, and obtain the corresponding API key.
+   For detailed instructions, refer to the [Honeycomb Documentation](https://docs.honeycomb.io/).
+
+2. Set the `Honeycomb API Key `as an environment variable in Gitpod using these commands: 
 ```bash
 export HONEYCOMB_API_KEY="<your API key>"
 gp env HONEYCOMB_API_KEY="<your API key>"
@@ -64,29 +65,25 @@ gp env HONEYCOMB_SERVICE_NAME="Cruddur-social"
 ```
 <bold> Make sure to include the quotation marks.<bold /> <br />
 
-Confirm the `env vars` have been set:
+3. Confirm the environment variables `env vars` have been set:
 ```sh
       env | grep HONEY
 ```
-Then use your API Key in `backend-flask` -> `docker-compose.yml` file. 
-<br />
-under >
-```
-backend-flask:
-    environment:
-``` 
-<br />
 
-add the code below:
+4. Use your API key in the `backend-flask` -> `docker-compose.yml` file. Under the `backend-flask` service, add the following code:
 
 ```yaml
+backend-flask:
+    environment:
       OTEL_SERVICE_NAME: 'backend-flask'
       OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
       OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
 ```
-<br />
 
-Add the code below in `backend-flask` -> `requirements.txt` to install required packages to use Open Telemetry (OTEL) services.
+### Instrumentation
+
+1. Add the following packages to `backend-flask` -> `requirements.txt` to install the required packages for Open Telemetry (OTEL) services:
+
 ```txt
   opentelemetry-api 
   opentelemetry-sdk 
@@ -98,16 +95,13 @@ Add the code below in `backend-flask` -> `requirements.txt` to install required 
 
 <br />
 
-Then run the code below from within `backend-flask`:
+2. Install the required packages by running the following command from within `backend-flask`:
 
 ```sh
       pip install -r requirements.txt
 ```
 
-- **To get required packages**
-  <br />
-Below is the `backend-flask>>app.py` code required for Honeycomb, <br />
-To be placed at around line 16 after `from services...` but above `app = Flask(__name__)` <br />
+3. In `backend-flask` -> `app.py`, add the following code after the `from services...` import statement but above `app = Flask(__name__)`:
 
 ```py
 # Honeycomb ------------
@@ -132,14 +126,6 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProces
 ```
 <br />
 
-To create a span do: 
-<br />
-```python
-  # Add SimpleSpanProcessor to show spans in STDOUT
-  simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
-  provider.add_span_processor(simple_processor)
-```
-
 - **Add the code below inside the 'app' to Initialize automatic instrumentation with Flask**
   <br />
 ```python
@@ -160,27 +146,51 @@ cors = CORS(
 )
 ```
 
-<br />
+#### Spans and Traces in Open Telemetry
 
-To create an attribute, add the following code on `app.py`:
+- A span is a unit of work that is executed within a trace. Spans are used to track the execution of your application, and they can be used to collect performance data, identify bottlenecks, and troubleshoot problems. <br />
+
+- A trace is a collection of spans. Traces are used to track the flow of execution through your application. They can be used to identify the root cause of problems, and they can be used to visualize the performance of your application. <br />
+
+When traces are sent to Honeycomb, the name of the Tracer is turned into the library.name field, which can be used to show all spans created from a particular tracer.
+
+#### Adding spans and attributes to tracers
+To create a span, you need to get a Tracer. A Tracer is a factory for creating spans. When you create a Tracer, you need to give it a name as a string. This string is the only required parameter. <br />
+
+Once you have set up tracing, you can add spans and attributes to tracers. A span is a unit of work that is executed within a trace. An attribute is a piece of data that can be attached to a span. <br />
+
+To add a span and attribute to a tracer, you can refer to the following:
+1. Create a trace by adding the following code on `app.py`:
 
 ```python
       from opentelemetry import trace
       tracer = trace.get_tracer("home.activities")
 ```
-also add:
-```python
-  cors = CORS(app, resources={r"/api/*": {"origins": origins}},
-              expose_headers="location,link",
-              allow_headers="content-type,if-modified-since",
-              methods="OPTIONS,GET,HEAD,POST")
+<br />
 
-  # Instrument Flask app
-  FlaskInstrumentor().instrument_app(app)
-  RequestsInstrumentor().instrument()
+2. Inside the `HomeActivities` class, Create a span and name it. This is used to initiate a new span.
+```py
+
+class HomeActivities:
+  def run():
+    with tracer.start_as_current_span("home-activities-mock-data"):
 
 ```
-<br />
+3. Allow access to the current active span:
+```py
+
+      span = trace.get_current_span()
+
+```
+
+4. Implement additional tracing and metadata capabilities
+```py
+
+      now = datetime.now(timezone.utc).astimezone()
+      span.set_attribute("app.now", now.isoformat())
+      span.set_attribute("app.result_length", len(results))
+
+```
 
 The full code to create span and attribute is as below, replace the following code in `home_activities.py`:
 
@@ -240,58 +250,140 @@ class HomeActivities:
     return results
 ```
 
-An idea for an additional span would be:
+In this code, we are creating a span named `home-activities-mock-data` and setting an attribute named `app.now`. The value of the attribute is the current time, as returned by the `datetime.now()` function. <br />
+
+Once we have added a span and attribute to a tracer, we can view the results on the Honeycomb website. <br />
+
+To do this, you need to launch the app and browse the backend endpoint and add the address `/api/activities/home`. 
+
+##### Additional Span Example
+
 ```python
 span.set_attribute("app.now", now.isoformat())
 ```
 
-add the code below to `home_activities.py` for testing:
+Add the code below to `home_activities.py` for testing:
 ```py
 LOGGER.info("HomeActivities")
 ```
 
-Once you receive info on Honeycomb, comment out the following code:
+Once you receive info on Honeycomb, you can comment out the following code for cleaner logs:
 ```py
 #def run(Logger):
    #Logger.info("HomeActivities")
 ```
 
-<Bold>Enable Gitpod to auto load ports:</Bold>
+### Honeycomb for Better Observability
+Having more observability leads to a better understanding of your errors and how to resolve them.
 
-In the `gitpod.yml` file, after the extensions add:
-```sh
-ports:
-  - name: frontend
-    port: 3000
-    onOpen: open-browser
-    visibility: public
-  - name: backend
-    port: 4567
-    visibility: public
-  - name: xray-daemon
-    port: 2000
-    visibility: public
+1. Import the `tracer` and `trace` objects from the `opentelemetry` library.
+
+```python
+from opentelemetry import trace
+tracer = trace.get_tracer(__name__)
 ```
 
-<Bold>Enable Gitpod to auto install frontend-react dependencies:</Bold>
+2. Create a new span with the `tracer.start_as_current_span()` method.
+```py
+span = tracer.start_as_current_span("home_activity")
+```
+`File: home_activity.py`
 
-In the `gitpod.yml` file, after the `aws-cli` dependency add:
-```sh
-  - name: react-js
-    init: |
-      cd frontend-react-js
-      npm i
+3. Set the attributes of the span, such as the `app.result_length` and `user.id attributes`.
+
+```py
+span.set_attribute("app.result_length", len(results))
+span.set_attribute("user.id", user.get("userID"))
 ```
 
-<br />
-
-For a full walkthrough on how to add Honeycomb check out the docs at:
-```html
-      https://docs.honeycomb.io/getting-data-in/opentelemetry/python-distro/
+4. Create nested spans with the `tracer.start_as_current_span()` method.
+```py
+with tracer.start_as_current_span("flaskfunc") as inner_span:
+    inner_span.set_attribute("inner", True)
+    span.set_attribute("user.id", user.get("user"))
+    with tracer.start_as_current_span("flaskfuncfunc") as sub_inner_span:
+        span.set_attribute("user.id", user.get("userID"))
 ```
+
+5. Set the attributes of nested spans.
+
+```py
+inner_span.set_attribute("inner", True)
+span.set_attribute("user.id", user.get("user"))
+```
+
+6. Add events to the spans.
+```py
+current_span = trace.get_current_span()
+current_span.add_event("Event is Working!")
+```
+
+Additionally, You can aim to intrument the following use cases.
+
+1. **Measure Request Duration:** Track the time taken for each API request to identify slow endpoints and performance bottlenecks.
+2. **Track Errors:** Monitor and analyze error occurrences to quickly detect and resolve issues.
+3. **Monitor User Behavior:** Instrument user actions like login/logout to understand how users interact with your app.
+4. **Analyze Database Queries:** Monitor database query execution time and frequency to optimize performance.
+5. **Track API Endpoint Usage:** Identify frequently accessed endpoints to understand critical app areas.
+6. **Monitor Resource Utilization:** Measure CPU, memory, and system resource usage to identify resource-intensive parts.
+7. **Analyze External Service Calls:** Monitor response times of interactions with external services for potential issues.
+8. **Capture Custom Business Events:** Instrument app-specific events to gain insights into user behavior and conversions.
+9. **Track Feature Usage:** Monitor feature flags or A/B tests to understand their impact on user engagement.
+10. **Monitor Geolocation Data:** Track location-related events for insights based on geographical locations.
+<br>
+
+The key is to choose instrumentation that aligns with your specific application's goals and requirements.
+
+### Heatmap in Honeycomb
+
+A heatmap is a graphical representation that provides a visual overview of the distribution and density of events over a specified period. It displays aggregated metrics related to service performance, request latency, error rates, or other custom attributes.
+
+1. Open the menu on Left-Hand Side and select "New Query" to start building a new query.
+2. In the query editor, set the visualization options to `HEATMAP(duration_ms)` and `"P90(duration_ms)` for the desired analysis.
+3. Once the options are configured, run the query to generate the heatmap visualization.
+
+You can zoom in and out on the heatmap, allowing you to see the details more clearly.
+
+## Honeycomb Who Am I? 
+The **Honeycomb Who Am I?** project is designed to provide insights into what system is this.
+
+When you have the tools spreads out before you, it's easy to lose track of what was this for and which is assigned to what task, so the projet comes along.
+
+1. **Accessing the Tool:**
+Navigate to the URL provided [Who-Am-I](https://honeycomb-whoami.glitch.me/) to access the "Honeycomb Who Am I?" tool interface.
+
+2. **API Key Input:**
+You will be prompted to provide your Honeycomb API key. Copy and paste the provided API key (`Kk4cyhR9ksCxNbrg6zyCyA`) into the designated field.
+
+3. **Submit and Authenticate:**
+Click on the "Submit" button after entering the API key. This will authenticate your access to the Honeycomb platform.
+
+4. **Understanding the Context:**
+The tool will provide information about the team, environment, and access privileges associated with the provided API key. For example:
+
+- Team: CRUDDUR-SOCIAL Project
+- Environment: test
+- Access: List of available Honeycomb features and access levels.
+
+5. **Performing Troubleshooting:**
+Once authenticated, you can use the tool to troubleshoot specific issues related to your application or system. Here are the steps to follow:
+
+- a. **Define the Problem:** Clearly define the issue you want to investigate. For example, you might want to understand why certain API requests are slow or why errors are occurring in your application.
+- b. **Instrumentation:** Ensure that your application is correctly instrumented to send traces and telemetry data to Honeycomb. If not already done, refer to Honeycomb's documentation to set up the necessary configurations.
+- c. **Filter Data:** Use the tool's filtering options to narrow down the data you want to analyze. You can focus on specific time frames, endpoints, services, or other relevant criteria.
+- d. **Explore Traces:** Dive into individual traces to understand the flow of requests through your system. Look for patterns, anomalies, or any indications of errors.
+- e. **Visualize Performance Metrics:** Utilize the tool's built-in visualizations to analyze performance metrics such as response times, latency, error rates, and more. This can help you identify areas that require attention.
+- f. **Collaborate and Share:** If you are working in a team, share the tool's results and insights with your colleagues to facilitate collaboration and problem-solving.
+- g. **Iterative Troubleshooting:** Address the issues you find through the tool's analysis, and repeat the process iteratively to refine your investigation until you identify and resolve the root cause of the problem.
+
+The tool serves as a powerful resource to gain deeper insights into your system's behavior and performance. 
+
+For a full walkthrough on how to add `Honeycomb`, check out the docs at:
+[HoneyComb Docs](https://docs.honeycomb.io/getting-data-in/opentelemetry/python-distro/) <br/>
+
 Specifically look at **trace**, **span** and **Adding attributes to spans**.
 
-## #2 AWS X-RAY
+## AWS X-RAY
 Amazon has another service called X-RAY which is helpful in tracing requests by microservices. analyzes and debugs application running on distributed environments. 
 
 ### Resources:
@@ -982,6 +1074,35 @@ If you notice rollbar is not tracking, utilize the code from this file:
 
 You can test the logs by janking the code eg deleting 'return' at the bottom of the 'home_activities.py' file.
 Once you get your responses, make sure to fix the janked code and commit the changes as 'finished implementing rollbar'.
+
+>> Enable Gitpod to auto load ports:
+
+In the `gitpod.yml` file, after the extensions add:
+```sh
+ports:
+  - name: frontend
+    port: 3000
+    onOpen: open-browser
+    visibility: public
+  - name: backend
+    port: 4567
+    visibility: public
+  - name: xray-daemon
+    port: 2000
+    visibility: public
+```
+
+<Bold>Enable Gitpod to auto install frontend-react dependencies:</Bold>
+
+In the `gitpod.yml` file, after the `aws-cli` dependency add:
+```sh
+  - name: react-js
+    init: |
+      cd frontend-react-js
+      npm i
+```
+
+<br />
 
 ### Demo
 
