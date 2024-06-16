@@ -64,6 +64,7 @@ xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
 
 @app.route("/api/message_groups", methods=['GET'])
+@xray_recorder.capture('data_message_groups')
 def data_message_groups():
   with tracer.start_as_current_span("data_message_groups"):
     user_handle  = 'andrewbrown'
@@ -74,6 +75,7 @@ def data_message_groups():
       return model['data'], 200
 
 @app.route("/api/messages/@<string:handle>", methods=['GET'])
+@xray_recorder.capture('data_messages')
 def data_messages(handle):
   with tracer.start_as_current_span("data_messages"):
     user_sender_handle = 'andrewbrown'
@@ -88,6 +90,7 @@ def data_messages(handle):
 
 @app.route("/api/messages", methods=['POST','OPTIONS'])
 @cross_origin()
+@xray_recorder.capture('data_create_message')
 def data_create_message():
   with tracer.start_as_current_span("data_create_message"):
     user_sender_handle = 'andrewbrown'
@@ -102,18 +105,21 @@ def data_create_message():
     return
 
 @app.route("/api/activities/home", methods=['GET'])
+@xray_recorder.capture('data_home')
 def data_home():
     with tracer.start_as_current_span("data_home"):
         data = HomeActivities.run()
         return data, 200
 
 @app.route("/api/activities/notifications", methods=['GET'])
+@xray_recorder.capture('data_notifications')
 def data_notifications():
   with tracer.start_as_current_span("data_notifications"):
     data = NotificationsActivities.run()
     return data, 200
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
+@xray_recorder.capture('data_handle')
 @xray_recorder.capture('activities_users')
 def data_handle(handle):
   with tracer.start_as_current_span("data_handle"):
@@ -124,6 +130,7 @@ def data_handle(handle):
       return model['data'], 200
 
 @app.route("/api/activities/search", methods=['GET'])
+@xray_recorder.capture('data_search')
 def data_search():
     with tracer.start_as_current_span("data_search"):
         term = request.args.get('term')
@@ -135,6 +142,7 @@ def data_search():
 
 @app.route("/api/activities", methods=['POST','OPTIONS'])
 @cross_origin()
+@xray_recorder.capture('data_activities')
 def data_activities():
     with tracer.start_as_current_span("data_activities"):
         user_handle = 'andrewbrown'
@@ -147,6 +155,7 @@ def data_activities():
             return model['data'], 200
 
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
+@xray_recorder.capture('data_show_activity')
 def data_show_activity(activity_uuid):
     with tracer.start_as_current_span("data_show_activity"):
         data = ShowActivity.run(activity_uuid=activity_uuid)
@@ -154,6 +163,7 @@ def data_show_activity(activity_uuid):
 
 @app.route("/api/activities/<string:activity_uuid>/reply", methods=['POST','OPTIONS'])
 @cross_origin()
+@xray_recorder.capture('data_activities_reply')
 def data_activities_reply(activity_uuid):
     with tracer.start_as_current_span("data_activities_reply"):
         user_handle = 'andrewbrown'
