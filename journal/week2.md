@@ -989,8 +989,6 @@ class UserActivities:
 
     return model
 ```
-
-
 Once done name the commit `Implement cloudwatch logs` and push the changes.
 
 ## #4 ROLLBAR
@@ -1303,6 +1301,28 @@ The link will be similar to: `https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.w
 ## Rollbar Error Report Specifics
 ![Rollbar error report specifics](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%202/Rollbar%20error%20log.JPG)
 <hr/>
+
+#### Extra - Automated download branch script
+I automated the process of creating local branches that exist remotely. <br />
+`git-branches.sh`:
+```sh
+
+# Fetch all branches
+git fetch --all
+
+# Loop through each remote branch and create a corresponding local branch
+for branch in $(git branch -r | grep -v '\->'); do
+    local_branch=${branch#origin/}
+    git checkout -b $local_branch $branch
+done
+
+```
+
+Make the file executable:
+```sh
+ chmod u+x git-branches.sh 
+```
+
 
 ## Save the work on its own branch named "week-2"
 ```sh
