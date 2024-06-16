@@ -282,6 +282,7 @@ Having more observability leads to a better understanding of your errors and how
 from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 ```
+The code above automates the opening of the given ports. <br />
 
 2. Create a new span with the `tracer.start_as_current_span()` method.
 ```py
@@ -289,12 +290,8 @@ span = tracer.start_as_current_span("home_activity")
 ```
 `File: home_activity.py`
 
-3. Set the attributes of the span, such as the `app.result_length` and `user.id attributes`.
-
-```py
-span.set_attribute("app.result_length", len(results))
-span.set_attribute("user.id", user.get("userID"))
 ```
+This setup ensures that all necessary dependencies for both the frontend and backend components are installed and ready for use.
 
 4. Create nested spans with the `tracer.start_as_current_span()` method.
 ```py
@@ -429,6 +426,8 @@ Additionally, to install all the dependencies via Python package manager run:
 ```sh
 pip install -r requirements.txt
 ```
+To manually install `x-ray` run:
+`pip install aws-xray-sdk`
 
 Make sure to create segments and subsegments by following the instructional videos. 
 
@@ -445,7 +444,6 @@ xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
 ```
 Modify the code in `app.py` as follows:
-around line 116:
 ```py
 @app.route("/api/activities/home", methods=['GET'])
 @xray_recorder.capture('activities_home')
@@ -489,7 +487,7 @@ around line 160:
 ```
 - **To create a new group for tracing and analyzing errors and faults in a Flask application.**
 
-<br> Add a sampling group to monitor log events:
+<br> Add a sampling group to monitor log events by running this in the terminal:
 ```py
 aws xray create-group \
    --group-name "Cruddur" \
@@ -516,15 +514,10 @@ Add the code below to `docker-compose.yml` file.
     ports:
       - 2000:2000/udp
 ```
-Also add Environment Variables in the `docker-compose.yml` file under environment in backend-flask:
+Also add Environment Variables in the `docker-compose.yml` file under environment in `backend-flask`:
 ```yaml
    AWS_XRAY_URL: "*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*"
    AWS_XRAY_DAEMON_ADDRESS: "xray-daemon:2000"
-```
-Add the entry below to app.py after the entry `app = Flask(__name__)`
-```python
-# xray
-XRayMiddleware(app, xray_recorder)
 ```
 
 The full code for `user_activities.py` service having implemented x-ray should be similar to:
@@ -556,7 +549,49 @@ class UserActivities:
 ![AWS X-ray segements sent](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%202/AWS-X-ray/terminal_segments_sent.JPG)
 ![AWS X-ray Trace map](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%202/AWS-X-ray/trace-map.JPG)
 ![AWS X-ray Traces](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%202/AWS-X-ray/traces.JPG)
+=======
+To ensure x-ray is running use:
+```sh
+docker ps | grep xray-daemon
+```
+## Debugging
+There is a lack of connectivity between `backen-flask` and `aws-x-ray-daemon` containsers. <br />
+I first created a script to check connectivity named `x-ray-connection-check.py`
 
+```py
+
+#!/usr/bin/env python3
+
+import socket
+
+def check_xray_connectivity():
+    sock = None
+    try:
+        xray_host = "xray-daemon"
+        xray_port = 2000
+        sock = socket.create_connection((xray_host, xray_port), timeout=5)
+        print("Connection to xray-daemon on port 2000 succeeded")
+    except socket.error as err:
+        print(f"Connection to xray-daemon on port 2000 failed: {err}")
+    finally:
+        if sock:
+            sock.close()
+
+check_xray_connectivity()
+
+```
+
+Additionally I also attached the `backend-flask` container so as to debug it.
+Once connected I installed `ping`
+```sh
+apt-get update
+apt-get install -y iputils-ping netcat
+```
+check network connectivity:
+```sh
+ping xray-daemon
+nc -zv xray-daemon 2000
+```
 ## #3 CloudWatch
 For CLoudWatch install `watchtower` and import `watchtower`, `logging` and `strftime from time`.
 
@@ -571,7 +606,7 @@ To install all dependencies>> <bold>`only necessary this time as it will be run 
 pip install -r requirements.txt
 ```
 
-Also set env vars in backend flask > `docker-compose.yml` 
+Set env vars in backend flask > `docker-compose.yml` 
 ```yaml
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
@@ -958,8 +993,6 @@ class UserActivities:
 
     return model
 ```
-
-
 Once done name the commit `Implement cloudwatch logs` and push the changes.
 
 ## #4 ROLLBAR
@@ -1272,6 +1305,46 @@ The link will be similar to: `https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.w
 ## Rollbar Error Report Specifics
 ![Rollbar error report specifics](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%202/Rollbar%20error%20log.JPG)
 <hr/>
+
+#### Extra - Automated download branch script
+To create and track each remote branch locally one can do it manually by:
+```sh
+
+# List all remote branches
+git branch -r
+
+# Create a local branch for each remote branch
+git checkout -b main origin/main
+git checkout -b week-0 origin/week-0
+git checkout -b week-1 origin/week-1
+git checkout -b week-2 origin/week-2
+git checkout -b week-3 origin/week-3
+git checkout -b week-4 origin/week-4
+git checkout -b week-5 origin/week-5
+git checkout -b week-6 origin/week-6
+git checkout -b week-7 origin/week-7
+
+```
+
+I automated the process of creating local branches that exist remotely. <br />
+`git-branches.sh`:
+```sh
+
+# Fetch all branches
+git fetch --all
+
+# Loop through each remote branch and create a corresponding local branch
+for branch in $(git branch -r | grep -v '\->'); do
+    local_branch=${branch#origin/}
+    git checkout -b $local_branch $branch
+done
+
+```
+
+Make the file executable:
+```sh
+ chmod u+x git-branches.sh 
+```
 
 ## Save the work on its own branch named "week-2"
 ```sh
