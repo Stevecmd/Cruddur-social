@@ -1303,6 +1303,25 @@ The link will be similar to: `https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.w
 <hr/>
 
 #### Extra - Automated download branch script
+To create and track each remote branch locally one can do it manually by:
+```sh
+
+# List all remote branches
+git branch -r
+
+# Create a local branch for each remote branch
+git checkout -b main origin/main
+git checkout -b week-0 origin/week-0
+git checkout -b week-1 origin/week-1
+git checkout -b week-2 origin/week-2
+git checkout -b week-3 origin/week-3
+git checkout -b week-4 origin/week-4
+git checkout -b week-5 origin/week-5
+git checkout -b week-6 origin/week-6
+git checkout -b week-7 origin/week-7
+
+```
+
 I automated the process of creating local branches that exist remotely. <br />
 `git-branches.sh`:
 ```sh
@@ -1322,7 +1341,6 @@ Make the file executable:
 ```sh
  chmod u+x git-branches.sh 
 ```
-
 
 ## Save the work on its own branch named "week-2"
 ```sh
