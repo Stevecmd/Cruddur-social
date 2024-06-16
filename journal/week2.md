@@ -282,6 +282,7 @@ Having more observability leads to a better understanding of your errors and how
 from opentelemetry import trace
 tracer = trace.get_tracer(__name__)
 ```
+The code above automates the opening of the given ports. <br />
 
 2. Create a new span with the `tracer.start_as_current_span()` method.
 ```py
@@ -289,12 +290,8 @@ span = tracer.start_as_current_span("home_activity")
 ```
 `File: home_activity.py`
 
-3. Set the attributes of the span, such as the `app.result_length` and `user.id attributes`.
-
-```py
-span.set_attribute("app.result_length", len(results))
-span.set_attribute("user.id", user.get("userID"))
 ```
+This setup ensures that all necessary dependencies for both the frontend and backend components are installed and ready for use.
 
 4. Create nested spans with the `tracer.start_as_current_span()` method.
 ```py
