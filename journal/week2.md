@@ -553,6 +553,9 @@ class UserActivities:
       model['data'] = results
     return model
 ```
+![AWS X-ray segements sent](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%202/AWS-X-ray/terminal_segments_sent.JPG)
+![AWS X-ray Trace map](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%202/AWS-X-ray/trace-map.JPG)
+![AWS X-ray Traces](https://github.com/Stevecmd/Cruddur-social/blob/main/journal/Week%202/AWS-X-ray/traces.JPG)
 
 ## #3 CloudWatch
 For CLoudWatch install `watchtower` and import `watchtower`, `logging` and `strftime from time`.
