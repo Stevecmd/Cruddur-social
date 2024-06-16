@@ -426,6 +426,8 @@ Additionally, to install all the dependencies via Python package manager run:
 ```sh
 pip install -r requirements.txt
 ```
+To manually install `x-ray` run:
+`pip install aws-xray-sdk`
 
 Make sure to create segments and subsegments by following the instructional videos. 
 
@@ -442,7 +444,6 @@ xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 XRayMiddleware(app, xray_recorder)
 ```
 Modify the code in `app.py` as follows:
-around line 116:
 ```py
 @app.route("/api/activities/home", methods=['GET'])
 @xray_recorder.capture('activities_home')
@@ -486,7 +487,7 @@ around line 160:
 ```
 - **To create a new group for tracing and analyzing errors and faults in a Flask application.**
 
-<br> Add a sampling group to monitor log events:
+<br> Add a sampling group to monitor log events by running this in the terminal:
 ```py
 aws xray create-group \
    --group-name "Cruddur" \
@@ -513,15 +514,10 @@ Add the code below to `docker-compose.yml` file.
     ports:
       - 2000:2000/udp
 ```
-Also add Environment Variables in the `docker-compose.yml` file under environment in backend-flask:
+Also add Environment Variables in the `docker-compose.yml` file under environment in `backend-flask`:
 ```yaml
    AWS_XRAY_URL: "*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*"
    AWS_XRAY_DAEMON_ADDRESS: "xray-daemon:2000"
-```
-Add the entry below to app.py after the entry `app = Flask(__name__)`
-```python
-# xray
-XRayMiddleware(app, xray_recorder)
 ```
 
 The full code for `user_activities.py` service having implemented x-ray should be similar to:
@@ -550,7 +546,27 @@ class UserActivities:
       model['data'] = results
     return model
 ```
+To ensure x-ray is running use:
+```sh
+docker ps | grep xray-daemon
+```
+## Debugging
+There is a lack of connectivity between `backen-flask` and `aws-x-ray-daemon` containsers. <br />
+I first created a script to check connectivity named `x-ray-connection-check.py`
 
+
+
+Additionally I also attached the `backend-flask` container so as to debug it.
+Once connected I installed `ping`
+```sh
+apt-get update
+apt-get install -y iputils-ping netcat
+```
+check network connectivity:
+```sh
+ping xray-daemon
+nc -zv xray-daemon 2000
+```
 ## #3 CloudWatch
 For CLoudWatch install `watchtower` and import `watchtower`, `logging` and `strftime from time`.
 
@@ -565,7 +581,7 @@ To install all dependencies>> <bold>`only necessary this time as it will be run 
 pip install -r requirements.txt
 ```
 
-Also set env vars in backend flask > `docker-compose.yml` 
+Set env vars in backend flask > `docker-compose.yml` 
 ```yaml
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
