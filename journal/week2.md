@@ -228,8 +228,14 @@ In the `gitpod.yml` file, after the `aws-cli` dependency add:
   - name: react-js
     init: |
       cd frontend-react-js
+      pip install -r requirements.txt
       npm i
+  - name: flask
+    command: |
+      cd backend-flask
+      pip install -r requirements.txt
 ```
+This setup ensures that all necessary dependencies for both the frontend and backend components are installed and ready for use.
 
 <br />
 
@@ -238,8 +244,6 @@ For a full walkthrough on how to add Honeycomb check out the docs at:
       https://docs.honeycomb.io/getting-data-in/opentelemetry/python-distro/
 ```
 Specifically look at **trace**, **span** and **Adding attributes to spans**.
-
-
 
 ## #2 AWS X-RAY
 Amazon has another service called X-RAY which is helpful in tracing requests by microservices. analyzes and debugs application running on distributed environments. 
