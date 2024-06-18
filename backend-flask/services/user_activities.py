@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from opentelemetry import trace
+from aws_xray_sdk.core import xray_recorder
 
 tracer = trace.get_tracer("user.activities")
 
@@ -23,6 +24,19 @@ class UserActivities:
                 'expires_at': (now + timedelta(days=31)).isoformat()
             }]
             model['data'] = results
+
+        try:
+            # Start an X-Ray subsegment
+            subsegment = xray_recorder.begin_subsegment('mock-data')
+            # Add metadata to the subsegment
+            metadata_dict = {
+                "now": now.isoformat(),
+                "results-size": len(model['data'])
+            }
+            subsegment.put_metadata('key', metadata_dict, 'namespace')
+        finally:
+            # End the X-Ray subsegment
+            xray_recorder.end_subsegment()
 
         # Instrumentation: Start tracing span for user activities operation
         with tracer.start_as_current_span("user-activities"):

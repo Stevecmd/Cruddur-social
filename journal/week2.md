@@ -518,6 +518,7 @@ Also add Environment Variables in the `docker-compose.yml` file under environmen
 ```yaml
    AWS_XRAY_URL: "*4567-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}*"
    AWS_XRAY_DAEMON_ADDRESS: "xray-daemon:2000"
+   AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
 ```
 
 The full code for `user_activities.py` service having implemented x-ray should be similar to:
@@ -555,7 +556,7 @@ To ensure x-ray is running use:
 docker ps | grep xray-daemon
 ```
 ## Debugging
-There is a lack of connectivity between `backen-flask` and `aws-x-ray-daemon` containsers. <br />
+There is a lack of connectivity between `backens-flask` and `aws-x-ray-daemon` containsers. <br />
 I first created a script to check connectivity named `x-ray-connection-check.py`
 
 ```py
@@ -593,7 +594,7 @@ ping xray-daemon
 nc -zv xray-daemon 2000
 ```
 ## #3 CloudWatch
-For CLoudWatch install `watchtower` and import `watchtower`, `logging` and `strftime from time`.
+For CLoudWatch install `watchtower` then input the imports: `watchtower`, `logging` and `strftime from time`.
 
 In `backend-flask requirements.text`, insert the following text:
 ```yaml
@@ -631,7 +632,13 @@ console_handler = logging.StreamHandler()
 cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
 LOGGER.addHandler(console_handler)
 LOGGER.addHandler(cw_handler)
-LOGGER.info("test log")
+LOGGER.info('Test log')
+```
+
+Modify the imports below:
+```sh
+from services.home_activities import HomeActivities
+from services.show_activity import ShowActivities
 ```
 
 To log any errors after every request put the code below into `app.py` just before `@app.route("/api/message_groups...")`
@@ -643,30 +650,280 @@ def after_request(response):
     LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
     return response
 ```
-The code should be similar to:
-```py
-class HomeActivities:
-      def run(logger):
-        logger.info("HomeActivities")
-```
-In `app.py` add the new logger:
-```py
-      LOGGER.info('test log')
-```
-Modify `app.py` as follows:
-```py
-      @app.route("/api/activities/home", methods=['GET'])
-      def data_home():
-        data = HomeActivities.run(logger=LOGGER)
+The full `app.py` file will be as follows:
+```sh
+
+from flask import Flask, request
+from flask_cors import CORS, cross_origin
+import os
+import logging
+# Cloudwatch
+import watchtower
+from time import strftime
+
+# Configuring Logger to Use CloudWatch
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+console_handler = logging.StreamHandler()
+cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
+LOGGER.addHandler(console_handler)
+LOGGER.addHandler(cw_handler)
+LOGGER.info('Test log')
+
+from services.home_activities import HomeActivities
+from services.notifications_activities import *
+from services.user_activities import *
+from services.create_activity import *
+from services.create_reply import *
+from services.search_activities import *
+from services.message_groups import *
+from services.messages import *
+from services.create_message import *
+from services.show_activity import ShowActivities
+
+# HoneyComb 
+from opentelemetry import trace
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+
+# Import AWS X-Ray SDK
+# from aws_xray_sdk.core import xray_recorder
+# from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
+app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+
+# HoneyComb -----------
+# Initialize tracing
+provider = TracerProvider()
+processor = BatchSpanProcessor(OTLPSpanExporter())
+provider.add_span_processor(processor)
+trace.set_tracer_provider(provider)
+tracer = trace.get_tracer(__name__)
+
+# Add SimpleSpanProcessor to show spans in STDOUT
+simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
+provider.add_span_processor(simple_processor)
+
+# CORS setup
+frontend = os.getenv('FRONTEND_URL')
+backend = os.getenv('BACKEND_URL')
+logging.info(f'Frontend URL: {frontend}')
+logging.info(f'Backend URL: {backend}')
+origins = [frontend, backend]
+cors = CORS(app, resources={r"/api/*": {"origins": origins}},
+            expose_headers="location,link",
+            allow_headers="content-type,if-modified-since",
+            methods="OPTIONS,GET,HEAD,POST")
+
+# Instrument Flask app
+FlaskInstrumentor().instrument_app(app)
+RequestsInstrumentor().instrument()
+
+# Xray
+# xray_url = os.getenv("AWS_XRAY_URL", "127.0.0.1:2000")
+# logging.info(f'XRay URL: {xray_url}')
+# xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
+# XRayMiddleware(app, xray_recorder)
+
+# ------- Cloudwatch Logs ----------
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
+
+@app.route("/api/message_groups", methods=['GET'])
+# @xray_recorder.capture('data_message_groups')
+def data_message_groups():
+    with tracer.start_as_current_span("data_message_groups"):
+        user_handle  = 'andrewbrown'
+        model = MessageGroups.run(user_handle=user_handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+
+@app.route("/api/messages/@<string:handle>", methods=['GET'])
+# @xray_recorder.capture('data_messages')
+def data_messages(handle):
+    with tracer.start_as_current_span("data_messages"):
+        user_sender_handle = 'andrewbrown'
+        user_receiver_handle = request.args.get('user_reciever_handle')
+
+        model = Messages.run(user_sender_handle=user_sender_handle, user_receiver_handle=user_receiver_handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+        return
+
+@app.route("/api/messages", methods=['POST','OPTIONS'])
+@cross_origin()
+# @xray_recorder.capture('data_create_message')
+def data_create_message():
+    with tracer.start_as_current_span("data_create_message"):
+        user_sender_handle = 'andrewbrown'
+        user_receiver_handle = request.json['user_receiver_handle']
+        message = request.json['message']
+
+        model = CreateMessage.run(message=message,user_sender_handle=user_sender_handle,user_receiver_handle=user_receiver_handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+        return
+
+@app.route("/api/activities/home", methods=["GET"])
+def data_home():
+    with tracer.start_as_current_span("data_home"):
+        data = HomeActivities.run()
         return data, 200
+
+@app.route("/api/activities/notifications", methods=['GET'])
+# @xray_recorder.capture('data_notifications')
+def data_notifications():
+    with tracer.start_as_current_span("data_notifications"):
+        data = NotificationsActivities.run()
+        return data, 200
+
+@app.route("/api/activities/@<string:handle>", methods=['GET'])
+# @xray_recorder.capture('data_handle')
+# @xray_recorder.capture('activities_users')
+def data_handle(handle):
+    with tracer.start_as_current_span("data_handle"):
+        model = UserActivities.run(handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+
+@app.route("/api/activities/search", methods=['GET'])
+# @xray_recorder.capture('data_search')
+def data_search():
+    with tracer.start_as_current_span("data_search"):
+        term = request.args.get('term')
+        model = SearchActivities.run(term)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+
+@app.route("/api/activities", methods=['POST','OPTIONS'])
+@cross_origin()
+# @xray_recorder.capture('data_activities')
+def data_activities():
+    with tracer.start_as_current_span("data_activities"):
+        user_handle = 'andrewbrown'
+        message = request.json['message']
+        ttl = request.json['ttl']
+        model = CreateActivity.run(message, user_handle, ttl)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+
+@app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
+# @xray_recorder.capture('data_show_activity')
+def data_show_activity(activity_uuid):
+    with tracer.start_as_current_span("data_show_activity"):
+        data = ShowActivity.run(activity_uuid=activity_uuid)
+        return data, 200
+
+@app.route("/api/activities/<string:activity_uuid>/reply", methods=['POST','OPTIONS'])
+@cross_origin()
+# @xray_recorder.capture('data_activities_reply')
+def data_activities_reply(activity_uuid):
+    with tracer.start_as_current_span("data_activities_reply"):
+        user_handle = 'andrewbrown'
+        message = request.json['message']
+        model = CreateReply.run(message, user_handle, activity_uuid)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
 ```
+Modify `home_activities.py` as below:
+```py
+from datetime import datetime, timedelta, timezone
+from opentelemetry import trace
+import logging
+
+tracer = trace.get_tracer(__name__)
+LOGGER = logging.getLogger(__name__)
+
+class HomeActivities:
+    @staticmethod
+    def run():
+        LOGGER.info('Generating mock data for /api/activities/home')
+
+        with tracer.start_as_current_span("home_activities_run"):
+            span = trace.get_current_span()
+            now = datetime.now(timezone.utc).astimezone()
+
+            results = [
+                {
+                    'uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
+                    'handle': 'Andrew Brown',
+                    'message': 'Cloud is fun!',
+                    'created_at': (now - timedelta(days=2)).isoformat(),
+                    'expires_at': (now + timedelta(days=5)).isoformat(),
+                    'likes_count': 5,
+                    'replies_count': 1,
+                    'reposts_count': 0,
+                    'replies': [
+                        {
+                            'uuid': '26e12864-1c26-5c3a-9658-97a10f8fea67',
+                            'reply_to_activity_uuid': '68f126b0-1ceb-4a33-88be-d90fa7109eee',
+                            'handle': 'Worf',
+                            'message': 'This post has no honor!',
+                            'likes_count': 0,
+                            'replies_count': 0,
+                            'reposts_count': 0,
+                            'created_at': (now - timedelta(days=2)).isoformat()
+                        }
+                    ],
+                },
+                {
+                    'uuid': '66e12864-8c26-4c3a-9658-95a10f8fea67',
+                    'handle': 'Worf',
+                    'message': 'I am out of prune juice',
+                    'created_at': (now - timedelta(days=7)).isoformat(),
+                    'expires_at': (now + timedelta(days=9)).isoformat(),
+                    'likes': 0,
+                    'replies': []
+                },
+                {
+                    'uuid': '248959df-3079-4947-b847-9e0892d1bab4',
+                    'handle': 'Garek',
+                    'message': 'My dear doctor, I am just a simple tailor',
+                    'created_at': (now - timedelta(hours=1)).isoformat(),
+                    'expires_at': (now + timedelta(hours=12)).isoformat(),
+                    'likes': 0,
+                    'replies': []
+                }
+            ]
+
+            span.set_attribute("app.result_length", len(results))
+            return results
+
+```
+
 Also confirm you have set env vars in `backend flask` > `docker-compose.yml` 
 ```yaml
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
 ```
-Modify `backend-flask/services/user_activities.py` to look as below:
+Modify `backend-flask/services/user_activities.py` as below:
 ```py
 from datetime import datetime, timedelta, timezone
 from aws_xray_sdk.core import xray_recorder
@@ -707,7 +964,7 @@ class UserActivities:
     return model
 ```
 
-Modify `backend-flask/app.py` to look as below:
+Modify `backend-flask/app.py` to look as below to disable cloudwatch:
 ```py
 from flask import Flask
 from flask import request
