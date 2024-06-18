@@ -2,8 +2,20 @@ from flask import Flask, request
 from flask_cors import CORS, cross_origin
 import os
 import logging
+# Cloudwatch
+import watchtower
+from time import strftime
 
-from services.home_activities import *
+# Configuring Logger to Use CloudWatch
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+console_handler = logging.StreamHandler()
+cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
+LOGGER.addHandler(console_handler)
+LOGGER.addHandler(cw_handler)
+LOGGER.info('Test log')
+
+from services.home_activities import HomeActivities
 from services.notifications_activities import *
 from services.user_activities import *
 from services.create_activity import *
@@ -12,7 +24,7 @@ from services.search_activities import *
 from services.message_groups import *
 from services.messages import *
 from services.create_message import *
-from services.show_activity import *
+from services.show_activity import ShowActivities
 
 # HoneyComb 
 from opentelemetry import trace
@@ -63,49 +75,55 @@ RequestsInstrumentor().instrument()
 # xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 # XRayMiddleware(app, xray_recorder)
 
+# ------- Cloudwatch Logs ----------
+@app.after_request
+def after_request(response):
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+    return response
+
 @app.route("/api/message_groups", methods=['GET'])
 # @xray_recorder.capture('data_message_groups')
 def data_message_groups():
-  with tracer.start_as_current_span("data_message_groups"):
-    user_handle  = 'andrewbrown'
-    model = MessageGroups.run(user_handle=user_handle)
-    if model['errors'] is not None:
-      return model['errors'], 422
-    else:
-      return model['data'], 200
+    with tracer.start_as_current_span("data_message_groups"):
+        user_handle  = 'andrewbrown'
+        model = MessageGroups.run(user_handle=user_handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
 
 @app.route("/api/messages/@<string:handle>", methods=['GET'])
 # @xray_recorder.capture('data_messages')
 def data_messages(handle):
-  with tracer.start_as_current_span("data_messages"):
-    user_sender_handle = 'andrewbrown'
-    user_receiver_handle = request.args.get('user_reciever_handle')
+    with tracer.start_as_current_span("data_messages"):
+        user_sender_handle = 'andrewbrown'
+        user_receiver_handle = request.args.get('user_reciever_handle')
 
-    model = Messages.run(user_sender_handle=user_sender_handle, user_receiver_handle=user_receiver_handle)
-    if model['errors'] is not None:
-      return model['errors'], 422
-    else:
-      return model['data'], 200
-    return
+        model = Messages.run(user_sender_handle=user_sender_handle, user_receiver_handle=user_receiver_handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+        return
 
 @app.route("/api/messages", methods=['POST','OPTIONS'])
 @cross_origin()
 # @xray_recorder.capture('data_create_message')
 def data_create_message():
-  with tracer.start_as_current_span("data_create_message"):
-    user_sender_handle = 'andrewbrown'
-    user_receiver_handle = request.json['user_receiver_handle']
-    message = request.json['message']
+    with tracer.start_as_current_span("data_create_message"):
+        user_sender_handle = 'andrewbrown'
+        user_receiver_handle = request.json['user_receiver_handle']
+        message = request.json['message']
 
-    model = CreateMessage.run(message=message,user_sender_handle=user_sender_handle,user_receiver_handle=user_receiver_handle)
-    if model['errors'] is not None:
-      return model['errors'], 422
-    else:
-      return model['data'], 200
-    return
+        model = CreateMessage.run(message=message,user_sender_handle=user_sender_handle,user_receiver_handle=user_receiver_handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
+        return
 
-@app.route("/api/activities/home", methods=['GET'])
-# @xray_recorder.capture('data_home')
+@app.route("/api/activities/home", methods=["GET"])
 def data_home():
     with tracer.start_as_current_span("data_home"):
         data = HomeActivities.run()
@@ -114,20 +132,20 @@ def data_home():
 @app.route("/api/activities/notifications", methods=['GET'])
 # @xray_recorder.capture('data_notifications')
 def data_notifications():
-  with tracer.start_as_current_span("data_notifications"):
-    data = NotificationsActivities.run()
-    return data, 200
+    with tracer.start_as_current_span("data_notifications"):
+        data = NotificationsActivities.run()
+        return data, 200
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
 # @xray_recorder.capture('data_handle')
 # @xray_recorder.capture('activities_users')
 def data_handle(handle):
-  with tracer.start_as_current_span("data_handle"):
-    model = UserActivities.run(handle)
-    if model['errors'] is not None:
-      return model['errors'], 422
-    else:
-      return model['data'], 200
+    with tracer.start_as_current_span("data_handle"):
+        model = UserActivities.run(handle)
+        if model['errors'] is not None:
+            return model['errors'], 422
+        else:
+            return model['data'], 200
 
 @app.route("/api/activities/search", methods=['GET'])
 # @xray_recorder.capture('data_search')
