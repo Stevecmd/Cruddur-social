@@ -2,18 +2,19 @@ from flask import Flask, request
 from flask_cors import CORS, cross_origin
 import os
 import logging
+
 # Cloudwatch
 import watchtower
 from time import strftime
 
-# Configuring Logger to Use CloudWatch
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
-console_handler = logging.StreamHandler()
-cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
-LOGGER.addHandler(console_handler)
-LOGGER.addHandler(cw_handler)
-LOGGER.info('Test log')
+# # Configuring Logger to Use CloudWatch
+# LOGGER = logging.getLogger(__name__)
+# LOGGER.setLevel(logging.DEBUG)
+# console_handler = logging.StreamHandler()
+# cw_handler = watchtower.CloudWatchLogHandler(log_group='cruddur')
+# LOGGER.addHandler(console_handler)
+# LOGGER.addHandler(cw_handler)
+# LOGGER.info('Test log')
 
 from services.home_activities import HomeActivities
 from services.notifications_activities import *
@@ -75,12 +76,12 @@ RequestsInstrumentor().instrument()
 # xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 # XRayMiddleware(app, xray_recorder)
 
-# ------- Cloudwatch Logs ----------
-@app.after_request
-def after_request(response):
-    timestamp = strftime('[%Y-%b-%d %H:%M]')
-    LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
-    return response
+# # ------- Cloudwatch Logs ----------
+# @app.after_request
+# def after_request(response):
+#     timestamp = strftime('[%Y-%b-%d %H:%M]')
+#     LOGGER.error('%s %s %s %s %s %s', timestamp, request.remote_addr, request.method, request.scheme, request.full_path, response.status)
+#     return response
 
 @app.route("/api/message_groups", methods=['GET'])
 # @xray_recorder.capture('data_message_groups')

@@ -960,7 +960,7 @@ class UserActivities:
     return model
 ```
 
-Modify `backend-flask/app.py` to look as below:
+Modify `backend-flask/app.py` to look as below to disable cloudwatch:
 ```py
 from flask import Flask
 from flask import request
