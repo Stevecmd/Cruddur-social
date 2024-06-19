@@ -94,6 +94,20 @@ rollbar_initialized = False
 
 # Rollbar ---------
 rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+
+if not rollbar_access_token:
+    logging.error("ROLLBAR_ACCESS_TOKEN not set")
+else:
+    logging.info(f"ROLLBAR_ACCESS_TOKEN is set to {rollbar_access_token}")
+    rollbar.init(
+        rollbar_access_token,
+        'production',
+        root=os.path.dirname(os.path.realpath(__file__)),
+        allow_logging_basic_config=False
+    )
+    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+    rollbar_initialized = True
+
 @app.before_request
 def init_rollbar():
     global rollbar_initialized

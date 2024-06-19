@@ -1352,6 +1352,46 @@ You should get the response:
 `Hello World!`
 Check the Rollbar website for your logs and make sure to select all the checkboxes under Items > Levels.
 
+### Debugging Rollbar
+I was having a hard time getting the docker container to pick up the gitpod env vars. <br />
+Solution: <br />
+Create a `.env` at the root of the project and store your Rollbar key:
+```sh
+
+ROLLBAR_ACCESS_TOKEN = 12345678987654321
+
+```
+Remember to block your `.env` file from being pushed to Github by adding the filename `.env` to <br />
+the `.gitignore` file.
+
+To confirm that Backend is receiving the key run:
+```sh
+
+docker-compose exec backend-flask env | grep ROLLBAR_ACCESS_TOKEN
+
+```
+
+Within `app.py` add the following to get confirmation that Rollbar is working:
+```sh
+
+# Rollbar ---------
+rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
+
+if not rollbar_access_token:
+    logging.error("ROLLBAR_ACCESS_TOKEN not set")
+else:
+    logging.info(f"ROLLBAR_ACCESS_TOKEN is set to {rollbar_access_token}")
+    rollbar.init(
+        rollbar_access_token,
+        'production',
+        root=os.path.dirname(os.path.realpath(__file__)),
+        allow_logging_basic_config=False
+    )
+    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+    rollbar_initialized = True
+
+```
+
 ## [Note] Changes to Rollbar:
 
 During the original bootcamp cohort, there was a newer version of flask.
