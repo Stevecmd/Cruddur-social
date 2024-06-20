@@ -58,4 +58,11 @@ class HomeActivities:
             ]
 
             span.set_attribute("app.result_length", len(results))
+            for result in results:
+                span.add_event("activity_created", {
+                    "uuid": result['uuid'],
+                    "handle": result['handle'],
+                    "message": result['message'],
+                    "created_at": result['created_at']
+                })
             return results

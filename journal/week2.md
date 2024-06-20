@@ -1449,6 +1449,32 @@ The link will be similar to: `https://4567-stevecmd-awsbootcampcru-c7fjn6b3pzb.w
 - The frontend - port 3000, <br />
 The link will be similar to: `https://3000-stevecmd-awsbootcampcru-c7fjn6b3pzb.ws-eu107.gitpod.io/`
 
+### Docker images clean-up
+Delete images with <none> tags try either command:
+```sh
+docker images -q --filter "dangling=true" | xargs docker rmi
+docker image prune -f
+```
+Remove all unused images, not just dangling ones:
+```sh
+docker image prune -a -f
+```
+Remove stopped containers:
+```sh
+docker container prune -f
+```
+Remove unused volumes:
+```sh
+docker volume prune -f
+```
+Remove unused networks:
+```sh
+docker network prune -f
+```
+Build and Run Docker Compose:
+```sh
+docker compose -f "docker-compose.yml" up -d --build
+```
 
 ![Creating the Honeycomb environment](https://github.com/Stevecmd/aws-bootcamp-cruddur-2023/blob/main/journal/Week%202/Honeycombenvironment.JPG)
 
