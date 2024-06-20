@@ -36,6 +36,32 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
 
+# # New-relic
+# from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+# from opentelemetry.sdk.trace import TracerProvider
+# from opentelemetry.sdk.trace.export import BatchSpanProcessor
+# from opentelemetry.sdk.resources import Resource
+# from opentelemetry.semconv.resource import ResourceAttributes
+
+# # New Relic Exporter
+# from opentelemetry.exporter.newrelic import NewRelicSpanExporter
+
+# # Initialize tracing with New Relic Exporter
+# provider = TracerProvider(resource=Resource.create({
+#     ResourceAttributes.SERVICE_NAME: "backend-flask"
+# }))
+
+# # New Relic Span Exporter
+# newrelic_exporter = NewRelicSpanExporter(
+#     insert_key=os.getenv('NEW_RELIC_INSERT_KEY'),  # New Relic Insert Key
+#     service_name="backend-flask"
+# )
+
+# processor = BatchSpanProcessor(newrelic_exporter)
+# provider.add_span_processor(processor)
+# trace.set_tracer_provider(provider)
+# tracer = trace.get_tracer(__name__)
+
 # Import AWS X-Ray SDK
 # from aws_xray_sdk.core import xray_recorder
 # from aws_xray_sdk.ext.flask.middleware import XRayMiddleware

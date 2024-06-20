@@ -97,30 +97,30 @@ services:
   #     networks:
   #       - internal-network
 
-# New-Relic
-  agent:
-    container_name: newrelic-infra
-    build:
-      context: ./New-Relic/newrelic-infra
-      dockerfile: newrelic-infra.dockerfile
-    ports:
-      - "7000:7000"
-    cap_add:
-      - SYS_PTRACE
-    pid: host
-    privileged: true
-    volumes:
-      - "/:/host:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    restart: unless-stopped
-    networks:
-      - internal-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl --silent --fail http://localhost:7000"]
-      interval: 60s
-      retries: 5
-      start_period: 20s
-      timeout: 10s
+# # New-Relic
+#   agent:
+#     container_name: newrelic-infra
+#     build:
+#       context: ./New-Relic/newrelic-infra
+#       dockerfile: newrelic-infra.dockerfile
+#     ports:
+#       - "7000:7000"
+#     cap_add:
+#       - SYS_PTRACE
+#     pid: host
+#     privileged: true
+#     volumes:
+#       - "/:/host:ro"
+#       - "/var/run/docker.sock:/var/run/docker.sock"
+#     restart: unless-stopped
+#     networks:
+#       - internal-network
+#     healthcheck:
+#       test: ["CMD-SHELL", "curl --silent --fail http://localhost:7000"]
+#       interval: 60s
+#       retries: 5
+#       start_period: 20s
+#       timeout: 10s
 
 networks:
   internal-network:
