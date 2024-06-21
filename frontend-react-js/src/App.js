@@ -10,57 +10,67 @@ import MessageGroupsPage from './pages/MessageGroupsPage';
 import MessageGroupPage from './pages/MessageGroupPage';
 import ConfirmationPage from './pages/ConfirmationPage';
 import React from 'react';
-import process from 'process';
-import {
-  createBrowserRouter,
-  RouterProvider
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Amplify } from 'aws-amplify';
+
+// Ensure that all required environment variables are available
+const {
+  REACT_APP_AWS_PROJECT_REGION,
+  REACT_APP_AWS_COGNITO_REGION,
+  REACT_APP_AWS_USER_POOLS_ID,
+  REACT_APP_CLIENT_ID,
+} = process.env;
+
+Amplify.configure({
+  Auth: {
+    region: REACT_APP_AWS_PROJECT_REGION,
+    userPoolId: REACT_APP_AWS_USER_POOLS_ID,
+    userPoolWebClientId: REACT_APP_CLIENT_ID,
+  },
+  oauth: {},
+});
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <HomeFeedPage />
+    element: <HomeFeedPage />,
   },
   {
     path: "/notifications",
-    element: <NotificationsFeedPage />
+    element: <NotificationsFeedPage />,
   },
   {
     path: "/@:handle",
-    element: <UserFeedPage />
+    element: <UserFeedPage />,
   },
   {
     path: "/messages",
-    element: <MessageGroupsPage />
+    element: <MessageGroupsPage />,
   },
   {
     path: "/messages/@:handle",
-    element: <MessageGroupPage />
+    element: <MessageGroupPage />,
   },
   {
     path: "/signup",
-    element: <SignupPage />
+    element: <SignupPage />,
   },
   {
     path: "/signin",
-    element: <SigninPage />
+    element: <SigninPage />,
   },
   {
     path: "/confirm",
-    element: <ConfirmationPage />
+    element: <ConfirmationPage />,
   },
   {
     path: "/forgot",
-    element: <RecoverPage />
-  }
+    element: <RecoverPage />,
+  },
 ]);
 
 function App() {
-  return (
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
