@@ -1,46 +1,56 @@
 import './SigninPage.css';
 import React from "react";
-import {ReactComponent as Logo} from '../components/svg/logo.svg';
+import { ReactComponent as Logo } from '../components/svg/logo.svg';
 import { Link } from "react-router-dom";
 
-// [TODO] Authenication
+// Authentication
 import { Auth } from 'aws-amplify';
 
 export default function SigninPage() {
-
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [errors, setErrors] = React.useState('');
 
   const onsubmit = async (event) => {
-    setErrors('')
+    setErrors('');
     event.preventDefault();
     Auth.signIn(email, password)
-    .then(user => {
-      console.log('user',user)
-      localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
-      window.location.href = "/"
-    })
-    .catch(error => { 
-      if (error.code == 'UserNotConfirmedException') {
-        window.location.href = "/confirm"
-      }
-      setErrors(error.message)
-    });
-    return false
+      .then(user => {
+        console.log('user', user);
+        localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken);
+        window.location.href = "/";
+      })
+      .catch(error => {
+        if (error.code === 'UserNotConfirmedException') {
+          window.location.href = "/confirm";
+        }
+        setErrors(error.message);
+      });
+    return false;
   }
 
   const email_onchange = (event) => {
     setEmail(event.target.value);
   }
+
   const password_onchange = (event) => {
     setPassword(event.target.value);
   }
 
   let el_errors;
-  if (errors){
+  if (errors) {
     el_errors = <div className='errors'>{errors}</div>;
   }
+
+  // Get email from the signup page where we stored the email in localStorage
+  React.useEffect(() => {
+    const storedEmail = localStorage.getItem('email');
+    if (storedEmail) {
+      setEmail(storedEmail);
+      // Remove the email from local storage because we're done with it.
+      localStorage.removeItem('email');
+    }
+  }, []);
 
   return (
     <article className="signin-article">
@@ -59,7 +69,7 @@ export default function SigninPage() {
               <input
                 type="text"
                 value={email}
-                onChange={email_onchange} 
+                onChange={email_onchange}
               />
             </div>
             <div className='field text_field password'>
@@ -67,7 +77,7 @@ export default function SigninPage() {
               <input
                 type="password"
                 value={password}
-                onChange={password_onchange} 
+                onChange={password_onchange}
               />
             </div>
           </div>
@@ -76,7 +86,6 @@ export default function SigninPage() {
             <Link to="/forgot" className="forgot-link">Forgot Password?</Link>
             <button type='submit'>Sign In</button>
           </div>
-
         </form>
         <div className="dont-have-an-account">
           <span>
@@ -85,7 +94,6 @@ export default function SigninPage() {
           <Link to="/signup">Sign up!</Link>
         </div>
       </div>
-
     </article>
   );
 }
