@@ -1279,6 +1279,22 @@ article.signin-article input[type='password']:focus {
   border: solid 1px var(--field-border-focus);
 }
 ```
+## Updates
+I ran a snyk test and realized that my docker compose version was outdated <br />
+and vulnerable to attacks. An update was urgently needed:
+```sh
+gitpod /workspace/Cruddur-social (week-3) $ docker compose version 
+Docker Compose version v2.27.0-gitpod.0
+gitpod /workspace/Cruddur-social (week-3) $ sudo rm /usr/local/bin/docker-compose
+gitpod /workspace/Cruddur-social (week-3) $ sudo curl -L "https://github.com/docker/compose/releases/download/v2.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100 56.8M  100 56.8M    0     0  49.7M      0  0:00:01  0:00:01 --:--:-- 49.7M
+gitpod /workspace/Cruddur-social (week-3) $ sudo chmod +x /usr/local/bin/docker-compose
+gitpod /workspace/Cruddur-social (week-3) $ docker-compose --version
+Docker Compose version v2.22.0
+```
 
 
 ## Save the work on its own branch named "week-3"
