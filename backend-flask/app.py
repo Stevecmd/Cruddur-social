@@ -88,15 +88,14 @@ simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
 provider.add_span_processor(simple_processor)
 
 # CORS setup
-frontend = os.getenv('FRONTEND_URL')
-backend = os.getenv('BACKEND_URL')
-logging.info(f'Frontend URL: {frontend}')
-logging.info(f'Backend URL: {backend}')
-origins = [frontend, backend]
-cors = CORS(app, resources={r"/api/*": {"origins": origins}},
-            expose_headers="location,link",
-            allow_headers="content-type,if-modified-since",
-            methods="OPTIONS,GET,HEAD,POST")
+origins = ["*"] 
+cors = CORS(
+  app, 
+  resources={r"/api/*": {"origins": origins}},
+  headers=['Content-Type', 'Authorization'], 
+  expose_headers='Authorization',
+  methods="OPTIONS,GET,HEAD,POST"
+)
 
 # Instrument Flask app
 FlaskInstrumentor().instrument_app(app)
@@ -124,7 +123,7 @@ rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
 if not rollbar_access_token:
     logging.error("ROLLBAR_ACCESS_TOKEN not set")
 else:
-    logging.info(f"ROLLBAR_ACCESS_TOKEN is set to {rollbar_access_token}")
+    # logging.info(f"ROLLBAR_ACCESS_TOKEN is set to {rollbar_access_token}")
     rollbar.init(
         rollbar_access_token,
         'production',
