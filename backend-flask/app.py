@@ -123,7 +123,7 @@ rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
 if not rollbar_access_token:
     logging.error("ROLLBAR_ACCESS_TOKEN not set")
 else:
-    logging.info(f"ROLLBAR_ACCESS_TOKEN is set to {rollbar_access_token}")
+    # logging.info(f"ROLLBAR_ACCESS_TOKEN is set to {rollbar_access_token}")
     rollbar.init(
         rollbar_access_token,
         'production',
