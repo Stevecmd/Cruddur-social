@@ -169,7 +169,7 @@ aws rds create-db-instance \
   --db-instance-identifier cruddur-db-instance \
   --db-instance-class db.t3.micro \
   --engine postgres \
-  --engine-version 14.6 \
+  --engine-version 13.12 \
   --master-username root \
   --master-user-password goodDatabasePassword1 \
   --allocated-storage 20 \
@@ -218,9 +218,9 @@ Once RDS is running, stop it temporarily using the Console.
 Run `docker-compose up` to check if we can connect to Postgres. <br>
 On Gitpod, Check if the Postgres container is running.
 
-Connect to Postgres locally, using the command below:
+Connect to Postgres locally, using the command below in the postgres attached shell:
 
-```
+```sh
 psql -U postgres --host localhost
 ```
 When prompted for the password, the default is 'password'.
@@ -270,7 +270,11 @@ or
 ```
 \q
 ```
+If Postgres isnt installed run:
+```sh
+sudo apt install postgresql-client
 
+```
 After this, from the `postgres:bash` terminal, in the directory `aws-bootcamp-cruddur-2024/backend-flask` run 
 the code below, input pasword as: `password`. 
 <br>
@@ -282,59 +286,63 @@ psql cruddur < db/schema.sql -h localhost -U postgres
 <br>
 This created the extension needed. 
 
-To make doing this easier, we created a `connection url string` to provide all the details that are needed to connect to our database. <br>
+To make doing this easier, Creat a `connection url string` to provide all the details that are needed to connect to the database. <br>
 Make sure to replace '<password>' with your actual password for the postgres DB. <br>
 **NB**:  Our local username is `postgres`.
 
 <br>
 The format for a connection url string for a Postgres database is the following: 
 
-```
+```sh
 postgresql://[user[:password]@][netlocation][:port][/dbname][?parameter1=value1]
 ```
 
 Input your password and test the connection:
-```
+```sh
 psql postgresql://postgres:<password>@localhost:5432/cruddur
 ```
 In my case the command was:
-```
+```sh
 psql postgresql://postgres:password@localhost:5432/cruddur
 ```
 If it connects then the code is valid, exit out `\q` and edit the code below by entering your password and run it:
-```
+```sh
 export CONNECTION_URL="postgresql://postgres:<password>@localhost:5432/cruddur"
 gp env CONNECTION_URL="postgresql://postgres:<password>@localhost:5432/cruddur"
 ```
 test the connection by running:
-```
+```sh
 psql $CONNECTION_URL
 ```
+export PROD_CONNECTION_URL="postgresql://cruddurroot:goodDatabasePassword1@cruddur-db-instance.c1yumkeocuho.us-east-1.rds.amazonaws.com:5432/cruddur"
 
 We then create a connection url string for our production RDS database as well, then set the environment variable there too. <br>
 In the code below, retrieve the endpoint and port from the console on `RDS` > `Databases` > `Connectivity and security`.
 Replace `goodDatabasePassword1` with your actual `password` to be used in Production(RDS). Also replace `cruddur-db-instance.c8ersdfsdf.us-east-1.rds.amazonaws.com` with your endpoint connection details.
-```
-export PROD_CONNECTION_URL="postgresql://root:goodDatabasePassword1@cruddur-db-instance.c8ersdfsdf.us-east-1.rds.amazonaws.com:5432/cruddur"
-gp env PROD_CONNECTION_URL="postgresql://root:goodDatabasePassword1@cruddur-db-instance.c8ersdfsdf.us-east-1.rds.amazonaws.com:5432/cruddur"
+```sh
+export PROD_CONNECTION_URL="postgresql://cruddurroot:goodDatabasePassword1@cruddur-db-instance.c8ersdfsdf.us-east-1.rds.amazonaws.com:5432/cruddur"
+gp env PROD_CONNECTION_URL="postgresql://cruddurroot:goodDatabasePassword1@cruddur-db-instance.c8ersdfsdf.us-east-1.rds.amazonaws.com:5432/cruddur"
 ```
 
 ## Bash scripting for common database actions
 
-We then created a new folder in 'backend-flask' named 'bin' which stands for binary. <br> 
+We then created a new folder in `backend-flask` named `bin` which stands for binary. <br> 
 In this folder, we can store bash scripts to execute commands on our database. <br> 
 We then made several new files: `db-create`, `db-drop`, `db-schema-load`.
 
 For each of the files add a shebang to instruct our app to treat the file as a bash script:
 
-```
+```sh
 #! /user/bin/bash
 ```
 From the `Backend-flask` folder, make our new files executable by running `chmod u+x bin/db-create`, `chmod u+x bin/db-drop`, `chmod u+x bin/db-schema-load`
 <br>
+
 We started off testing if we can drop our database. To do this, add the code below to `db-drop`.
 
-```
+```sh
+#! /usr/bin/bash
+
 psql $CONNECTION_URL -c "drop database cruddur";
 ```
 
@@ -344,7 +352,7 @@ This command should psql connect to our local Postgres database using our connec
 Proceed to edit the files as follows:
 
 > DB-create
-```
+```sh
 #! /usr/bin/bash
 
 echo "db-create"
@@ -353,7 +361,7 @@ NO_DB_CONNECTION_URL=$(sed 's/\/cruddur//g' <<<"$CONNECTION_URL")
 psql $NO_DB_CONNECTION_URL -c "CREATE database cruddur;"
 ```
 > DB-Drop
-```
+```sh
 #! /usr/bin/bash
 
 echo "db-drop"
@@ -364,7 +372,7 @@ psql $NO_DB_CONNECTION_URL -c "DROP database cruddur;"
 
 > DB-Schema-load
 
-```
+```sh
 #! /usr/bin/bash
 
 echo "db-schema-load"
@@ -380,7 +388,7 @@ To execute a file run:
 We need a way to determine when we're running from our production environment (prod) or our local Postgres environment. <br>
 To do this, we added an if statement to the code.
 Below is the modified code for `schema-load`.
-```
+```sh
 #! /usr/bin/bash
 
 #echo "== db-schema-load"
@@ -569,6 +577,7 @@ To connect to the `PROD` environment, you can affix the command with PROD to the
 ### db-sessions
 We may need to see which connections are running on our Postgres database in order to perform some actions eg `db-drop`.
 <br>
+
 For this, we implement `db-sessions` and make it executable. <br>
 Create a file called `db-sessions` under `backend-flask/bin`
 
@@ -729,12 +738,12 @@ echo $PROD_CONNECTION_URL # To see whether the connection details are set
 psql $PROD_CONNECTION_URL # Connecting to RDS
 ```
 If it isnt set:
-```
+```sh
 export PROD_CONNECTION_URL="postgresql://cruddurroot:<RDSdatabasepassword>@cruddur-db-instance.<unique-db-identifier>.us-east-1.rds.amazonaws.com:5432/cruddur"
 gp env PROD_CONNECTION_URL="postgresql://cruddurroot:<RDSdatabasepassword>@cruddur-db-instance.<unique-db-identifier>.us-east-1.rds.amazonaws.com:5432/cruddur"
 ```
 confirm the env vars:
-```
+```sh
 env | grep PROD
 ```
 You may test out connecting to the DB:
@@ -745,14 +754,14 @@ psql $CONNECTION_URL #works
 
 From the terminal, we run `curl ifconfig.me` which outputs our Gitpod IP address. Next we pass `GITPOD_IP=$(curl ifconfig.me)` as variable so that we can grab the GITPOD_IP and connect to RDS. <br>
 Confirm this by running:
-```
+```sh
 echo $GITPOD_IP
 ```
 
 Test the `psql` connection, this time it should work. <br>
 
 Production connection:
-```
+```sh
 psql $PROD_CONNECTION_URL #will not work because of Security group rules are not set
 ```
 On the console, create the relevant security group/s and take note of their ID's. Ideally it should be one security group that allows connections to `POSTGRES` from your gitpod IP and or your computer. <br>
@@ -789,11 +798,11 @@ aws ec2 modify-security-group-rules \
     --security-group-rules "SecurityGroupRuleId=$DB_SG_RULE_ID,SecurityGroupRule={Description=GITPOD,IpProtocol=tcp,FromPort=5432,ToPort=5432,CidrIpv4=$GITPOD_IP/32}"
 ```
 Make the file executable:
-```
+```sh
 chmod u+x bin/db/rds/update-sg-rule
 ```
 From with `backend-flask` run the file:
-```
+```sh
 ./bin/db/rds/update-sg-rule
 ```
 In case of an error, execute the code below and rerun the script above:
@@ -815,17 +824,17 @@ We also store our env var in `.gitpod.yml` as well as program `rds-update-sg-rul
       source  "$THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule" 
 ```
 Confirm settings by restarting gitpod and running:
-```
+```sh
 cd backend-flask
 ./bin/db/connect prod
 ```
 You should get the message:
-```
+```sh
 Running in production mode
 psql
 ```
 Type the code below to quit the psql connection:
-```
+```sh
 \q
 ```
 
@@ -835,7 +844,7 @@ After confirming connection to RDS from Gitpod, modify `docker-compose.yml` to u
 CONNECTION_URL: "${PROD_CONNECTION_URL}"
 ```
 Load your schema to the database:
-```
+```sh
 ./bin/db/schema-load
 ```
 After the table is created, if you visit Logs you should get a status `200` code. <br>
@@ -905,7 +914,7 @@ arn:aws:lambda:us-east-1:898466741470:layer:psycopg2-py38:1
 ## Create Cognito Pool and Lambda trigger.
 
 From the Cognito console, select the user pool and go to the `User pool properties` to add a lambda trigger. 
-```
+```sh
 Trigger type: Sign-up
 Sign-up: Post confirmation trigger
 Lambda function: cruddur-post-confirmation
@@ -942,14 +951,14 @@ Once you attach the policy, on the left hand side of the page select `VPC` and:
 - Save
 
 In the terminal run:
-```
+```sh
 ./bin/db/schema-load prod
 ```
 
 Go back to the website and register a new user then sign in -- investigate user registration on the terminal. <br>
 `./bin/db/connect prod`
 Once connected run:
-```
+```sh
 \dt #should show the tables
 select * from users; #should show registered users
 ```
@@ -960,7 +969,7 @@ To save on RDS spend, stop it temporarily.
 ## Creating Activities
 Edit the file 'backend-flask' > 'services' > `create_activity.py`
 after 'class CreateActivity' insert the code below:
-```
+```sh
 from datetime import datetime, timedelta, timezone
 from lib.db import db
 
@@ -1026,7 +1035,7 @@ class CreateActivity:
     return db.query_object_json(sql,{ 
       'uuid': uuid
       })
-```
+```sh
 Edit the file `backend-flask/lib/db.py` and add the function `print_sql_err`:
 ```
   def print_sql_err(self,err):
@@ -1047,11 +1056,11 @@ Edit the file `backend-flask/lib/db.py` and add the function `print_sql_err`:
 db = Db()
 ```
 Add the function below to `db.py`:
-```
+```sh
 def sql_execute
 ```
 Edit the `create_activity.py` as follows:
-```
+```sh
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -1125,7 +1134,7 @@ class CreateActivity:
 ```
 
 The full `db.py` file will contain:
-```
+```sh
 from psycopg_pool import ConnectionPool
 import os
 import re
@@ -1250,7 +1259,7 @@ class Db: #using a constructor to create an instance of the class
 db = Db()
 ```
 Edit 'home_activities.py':
-```
+```sh
 # from lib.db import pool, query_wrap_array
 from lib.db import db
 ```
@@ -1347,14 +1356,7 @@ class HomeActivities:
       span.set_attribute("app.result_length", len(results))
       return results
 
-      
-      
-      
-      
-      
-      
-      
-      
+  
 #       if param != None:
 #         else:
 
