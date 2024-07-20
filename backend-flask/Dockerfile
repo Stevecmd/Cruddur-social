@@ -20,6 +20,9 @@ RUN pip3 install -r requirements.txt
 # second period /backend-flask (inside container) 
 COPY . .
 
+# Ensure the create script is executable
+RUN chmod +x ./bin/db/*
+
 # Setting env vars inside container
 # and will remain set while container is running
 ENV FLASK_ENV=development
