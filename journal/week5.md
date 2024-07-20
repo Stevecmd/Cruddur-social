@@ -2739,6 +2739,21 @@ Starting up DynamoDB-local was the issue. I then changed the code in `docker-com
       - internal-network
   # Dynamo Database configuration ---- End -----------
 ```
+Make sure the Backend `Dockerfile` contains the installation of the postgres client:
+```sh
+# Update package list and install PostgreSQL client
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+```
+
+To debug the backend containers connection to postgres run:
+```sh
+
+docker-compose exec backend-flask bash
+psql -h db -U postgres
+
+```
+The password is `password` 
+
 #### Routes: <br />
 **Endpointes to take note of:** <br />
 Health-check: 
