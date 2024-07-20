@@ -2808,7 +2808,7 @@ momento cache create --name cruddur
 
 ## Save the work on its own branch named "week-5"
 ```sh
-cd aws-bootcamp-cruddur-2024
+cd Cruddur-social
 git checkout -b week-5
 ```
 <hr/>
