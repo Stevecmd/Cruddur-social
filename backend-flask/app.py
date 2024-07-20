@@ -88,13 +88,18 @@ simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
 provider.add_span_processor(simple_processor)
 
 # CORS setup
-origins = ["*"] 
+# origins = ["*"] 
+# cors = CORS(
+#   app, 
+#   resources={r"/api/*": {"origins": origins}},
+#   headers=['Content-Type', 'Authorization'], 
+#   expose_headers='Authorization',
+#   methods="OPTIONS,GET,HEAD,POST"
+# )
 cors = CORS(
-  app, 
-  resources={r"/api/*": {"origins": origins}},
-  headers=['Content-Type', 'Authorization'], 
-  expose_headers='Authorization',
-  methods="OPTIONS,GET,HEAD,POST"
+    app, 
+    resources={r"/api/*": {"origins": "*"}},
+    supports_credentials=True
 )
 
 # Instrument Flask app
@@ -137,18 +142,12 @@ else:
 def init_rollbar():
     global rollbar_initialized
     if not rollbar_initialized:
-        """init rollbar module"""
         rollbar.init(
-            # access token
             rollbar_access_token,
-            # environment name
             'production',
-            # server root directory, makes tracebacks prettier
             root=os.path.dirname(os.path.realpath(__file__)),
-            # flask already sets up logging
-            allow_logging_basic_config=False)
-
-        # send exceptions from `app` to rollbar, using flask's signal system.
+            allow_logging_basic_config=False
+        )
         got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
         rollbar_initialized = True
 
@@ -273,6 +272,14 @@ def data_activities_reply(activity_uuid):
             return model['errors'], 422
         else:
             return model['data'], 200
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return {"error": "Page not found"}, 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return {"error": "Internal server error"}, 500
 
 if __name__ == "__main__":
     app.run(debug=True)
