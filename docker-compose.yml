@@ -51,6 +51,7 @@ services:
       timeout: 10s
 
   db:
+    container_name: db
     image: postgres:13-alpine
     restart: always
     environment:
