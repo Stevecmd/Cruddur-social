@@ -11,6 +11,9 @@ COPY requirements.txt requirements.txt
 # Update package list and install PostgreSQL client
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
+# Debug tools
+RUN apt-get update && apt-get install -y iputils-ping netcat
+
 # Inside container
 # installing python libraries
 RUN pip3 install -r requirements.txt
