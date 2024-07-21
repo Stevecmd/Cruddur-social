@@ -2,67 +2,97 @@
 
 import boto3
 import sys
+from botocore.exceptions import ClientError
 
+# Default to local DynamoDB endpoint if no arguments are provided
 attrs = {
-  'endpoint_url': 'http://localhost:8000'
+    'endpoint_url': 'http://localhost:8000'
 }
 
+# Check if an argument is provided
 if len(sys.argv) == 2:
-  if "prod" in sys.argv[1]:
-    attrs = {}
+    if "prod" in sys.argv[1]:
+        # If 'prod' argument is provided, use the default (AWS) endpoint
+        attrs = {}
 
-dynamodb = boto3.client('dynamodb',**attrs)
+dynamodb = boto3.client('dynamodb', **attrs)
 
 table_name = 'cruddur-messages'
 
-response = dynamodb.create_table(
-  TableName=table_name,
-  AttributeDefinitions=[
-    {
-      'AttributeName': 'message_group_uuid',
-      'AttributeType': 'S'
-    },
-    {
-      'AttributeName': 'pk',
-      'AttributeType': 'S'
-    },
-    {
-      'AttributeName': 'sk',
-      'AttributeType': 'S'
-    },
-  ],
-  KeySchema=[
-    {
-      'AttributeName': 'pk',
-      'KeyType': 'HASH'
-    },
-    {
-      'AttributeName': 'sk',
-      'KeyType': 'RANGE'
-    },
-  ],
-  GlobalSecondaryIndexes= [{
-    'IndexName':'message-group-sk-index',
-    'KeySchema':[{
-      'AttributeName': 'message_group_uuid',
-      'KeyType': 'HASH'
-    },{
-      'AttributeName': 'sk',
-      'KeyType': 'RANGE'
-    }],
-    'Projection': {
-      'ProjectionType': 'ALL'
-    },
-    'ProvisionedThroughput': {
-      'ReadCapacityUnits': 5,
-      'WriteCapacityUnits': 5
-    },
-  }],
-  BillingMode='PROVISIONED',
-  ProvisionedThroughput={
-      'ReadCapacityUnits': 5,
-      'WriteCapacityUnits': 5
-  }
-)
+def create_table():
+    """Create the DynamoDB table."""
+    try:
+        response = dynamodb.create_table(
+            TableName=table_name,
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'message_group_uuid',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'pk',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'sk',
+                    'AttributeType': 'S'
+                },
+            ],
+            KeySchema=[
+                {
+                    'AttributeName': 'pk',
+                    'KeyType': 'HASH'
+                },
+                {
+                    'AttributeName': 'sk',
+                    'KeyType': 'RANGE'
+                },
+            ],
+            GlobalSecondaryIndexes=[{
+                'IndexName': 'message-group-sk-index',
+                'KeySchema': [{
+                    'AttributeName': 'message_group_uuid',
+                    'KeyType': 'HASH'
+                }, {
+                    'AttributeName': 'sk',
+                    'KeyType': 'RANGE'
+                }],
+                'Projection': {
+                    'ProjectionType': 'ALL'
+                },
+                'ProvisionedThroughput': {
+                    'ReadCapacityUnits': 5,
+                    'WriteCapacityUnits': 5
+                },
+            }],
+            BillingMode='PROVISIONED',
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+        )
+        print("Table created successfully.")
+        print(response)
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'ResourceInUseException':
+            print(f"Table '{table_name}' already exists.")
+        else:
+            print("Error creating table:")
+            print(e)
 
-print(response)
+# Check if the table exists before creating it
+def table_exists(table_name):
+    """Check if the DynamoDB table exists."""
+    try:
+        response = dynamodb.list_tables()
+        return table_name in response['TableNames']
+    except ClientError as e:
+        print("Error listing tables:")
+        print(e)
+        return False
+
+# Main logic
+if not table_exists(table_name):
+    create_table()
+else:
+    print(f"Table '{table_name}' already exists.")
